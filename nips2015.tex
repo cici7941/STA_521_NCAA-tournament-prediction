@@ -29,7 +29,7 @@ Duke University\\
 Durham, NC \\
 \texttt{hippo@stat.duke.edu} \\
 \And
-Emily Shao \\
+Wei (Emily) Shao \\
 Department of Statistics\\
 Duke University\\
 Durham, NC \\
@@ -54,51 +54,34 @@ line spaces precede the abstract. The abstract must be limited to one
 paragraph.
 \end{abstract}
 
+\section{Introduction}
+
+The topic of our team final project is predicting the results of the 2015 NCAA tournament. We chose this topic because all the members of our team are interested in sports and two of them are very familiar with basketball. Everyone in Duke feels proud of our team's achievements, so do we. Therefore, when we found the data set of NCAA basketball that would allows us to work on this topic, we decided on it immediately. For our final project we want to apply what we have learned to our field of interest.
+
+Since we know what happened in the 2015 tournament then we have a complete set of results with which to compare the prediction our model produces and hopefully we can also take a stab at predicting next year's edition as well.
+
+The data set we will be using is provided by a past competition on Kaggle.com, which ensures that the data is both reliable and rich enough for doing our predictions. Specifically, there are more than 5000 pieces of game data for each year and 34 columns of many other kinds of information for each game including 26 technical skill indexes, which will be useful for us to compare the performance of each team. Except for the detailed data of regular season for 2015, there is also detailed data of both regular season and tournaments from 2003-2014, which can be helpful if we want to consider or compare the performance of past years. With this data set, we can use many methods that we have learned from the class, such as regression and LASSO. Therefore, it is an appropriate data set for the final project.
+
+
+
+
 \section{Motivating Questions}
 
-\subsection{Style}
+\subsection{Question 1}
 
-Papers to be submitted to NIPS 2015 must be prepared according to the
-instructions presented here. Papers may be only up to eight pages long,
-including figures. Since 2009 an additional ninth page \textit{containing only
-cited references} is allowed. Papers that exceed nine pages will not be
-reviewed, or in any other way considered for presentation at the conference.
-%This is a strict upper bound. 
-
-Please note that this year we have introduced automatic line number generation
-into the style file (for \LaTeXe and Word versions). This is to help reviewers
-refer to specific lines of the paper when they make their comments. Please do
-NOT refer to these line numbers in your paper as they will be removed from the
-style file for the final version of accepted papers.
-
-The margins in 2015 are the same as since 2007, which allow for $\approx 15\%$
-more words in the paper compared to earlier years. We are also again using 
-double-blind reviewing. Both of these require the use of new style files.
-
-Authors are required to use the NIPS \LaTeX{} style files obtainable at the
-NIPS website as indicated below. Please make sure you use the current files and
-not previous versions. Tweaking the style files may be grounds for rejection.
+Teams in the NCAA change rosters very quickly which means that historical data of past seasons/tournaments has diminishing returns. For example, how useful will be the results of a season that happened 12 years ago in predicting this year's results when all the teams players (possibly coaches) may be completely different. Therefore, we want to know how useful and to what extent should we use historical data in our analysis.
 
 
-\subsection{Retrieval of style files}
+\subsection{Question 2}
 
-The style files for NIPS and other conference information are available on the World Wide Web at
-\begin{center}
-   \url{http://www.nips.cc/}
-\end{center}
-The file \verb+nips2015.pdf+ contains these 
-instructions and illustrates the
-various formatting requirements your NIPS paper must satisfy. \LaTeX{}
-users can choose between two style files:
-\verb+nips15submit_09.sty+ (to be used with \LaTeX{} version 2.09) and
-\verb+nips15submit_e.sty+ (to be used with \LaTeX{}2e). The file
-\verb+nips2015.tex+ may be used as a ``shell'' for writing your paper. All you
-have to do is replace the author, title, abstract, and text of the paper with
-your own. The file
-\verb+nips2015.rtf+ is provided as a shell for MS Word users.
+Another question is how useful are each individual game metric to our model? Are number of overtimes in a game really significant for our predictions? One way we might want to tune our model is by using backwards-step methods to identify the best model to use.
 
-The formatting instructions contained in these style files are summarized in
-sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
+
+
+\subsection{Question 3}
+
+As we use the model to predict the historical results of tournament in 2015 and test how well our model performs, we also want to know whether this model can potentially predict results of tournament in 2016. If the model we build is robust and works for future prediction, once regular season results in 2016 comes out in future, we are interested to know whether the prediction will still be valid, or whether we need to revise our model to adjust for any variability in the data.
+
 
 %% \subsection{Keywords for paper submission}
 %% Your NIPS paper can be submitted with any of the following keywords (more than one keyword is possible for each paper):
@@ -132,27 +115,12 @@ sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
 \section{Methods}
 \label{gen_inst}
 
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).
-Use 10~point type with a vertical spacing of 11~points. Times New Roman is the
-preferred typeface throughout. Paragraphs are separated by 1/2~line space,
-with no indentation.
+For the first motivation question, we may use some Bayesian methods. For example, we can use the historical data from 2003-2014 as our prior information and use the data in 2015 regular season as our observations. Or we can put different weights on the historical data we use. For example, put higher weights on data collected from more recent seasons.
 
-Paper title is 17~point, initial caps/lower case, bold, centered between
-2~horizontal rules. Top rule is 4~points thick and bottom rule is 1~point
-thick. Allow 1/4~inch space above and below title to rules. All pages should
-start at 1~inch (6~picas) from the top of the page.
+For the second motivation question, we may build a simple model with fewer variables and an advanced model which includes a mixture of more variables. The model we choose can be complexed regression models. Since we include different variables in each model, it imposes the necessity to apply more robust variable selection methods in the analysis, e.g. backward-stetp methods, LASSO.    
 
+For the third motivation question, we simply use the same model to predict tournament results in 2016 once regular season results comes out. 
 %The version of the paper submitted for review should have ``Anonymous Author(s)'' as the author of the paper.
-
-For the final version, authors' names are
-set in boldface, and each name is centered above the corresponding
-address. The lead author's name is to be listed first (left-most), and
-the co-authors' names (if different address) are set to follow. If
-there is only one co-author, list both author and co-author side by side.
-
-Please pay special attention to the instructions in section \ref{others}
-regarding figures, tables, acknowledgments, and references.
 
 \section{Data Links}
 Do not change any aspects of the formatting parameters in the style files.
