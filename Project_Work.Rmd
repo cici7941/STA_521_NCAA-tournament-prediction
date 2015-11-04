@@ -1,0 +1,23 @@
+---
+title: "Project Work"
+author: "SakaiAtMidnight"
+date: "November 4, 2015"
+output: pdf_document
+---
+
+We load the data:
+```{r}
+teams = read.csv("teams.csv")
+seasons = read.csv("seasons.csv")
+compactR = read.csv("regular_season_compact_results.csv")
+#detailedR
+compactT = read.csv("tourney_compact_results.csv")
+detailedT = read.csv("tourney_detailed_results.csv")
+```
+
+Subset 2014 info:
+```{r}
+regSeason2014 = compactR[which(compactR$season == 2014),]
+tourney2014 = compactT[which(compactT$season == 2014),]
+```
+
