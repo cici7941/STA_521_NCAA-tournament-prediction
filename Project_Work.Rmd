@@ -13,6 +13,7 @@ compactR = read.csv("regular_season_compact_results.csv")
 #detailedR
 compactT = read.csv("tourney_compact_results.csv")
 detailedT = read.csv("tourney_detailed_results.csv")
+detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
 Subset 2014 info:
@@ -42,6 +43,9 @@ exchange <- function(data){
 }
 datanew <- exchange(regSeason2014D)
 names(datanew)
-
+datanew = datanew[, -c(1, 2, 3, 5, 7)]
+datanewS = as.data.frame(scale(datanew))
+datanewS = datanewS[, -30]
+datanewS = cbind(datanewS, datanew$result)
+lm1 = glm(datanew$result~., data = datanewS, family = "binomial"(link = "logit"))
 ```
-
