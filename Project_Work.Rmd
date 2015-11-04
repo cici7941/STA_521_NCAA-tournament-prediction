@@ -59,5 +59,7 @@ datanewS.1=datanewS.1[,-20]
 colnames(datanewS.1)[19]="result"
 lm2=glm(result~., data = datanewS.1, family = "binomial"(link = "logit"))
 summary(lm2)
+pred=datanewS.1[,1:18]
+predict(lm2, pred)
 
 ```
