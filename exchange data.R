@@ -1,0 +1,36 @@
+We load the data:
+setwd("E:\\Duke\\Predictive modeling\\final project\\data")
+teams = read.csv("teams.csv")
+seasons = read.csv("seasons.csv")
+compactR = read.csv("regular_season_compact_results.csv")
+detailedR = read.csv("regular_season_detailed_results.csv")
+compactT = read.csv("tourney_compact_results.csv")
+detailedT = read.csv("tourney_detailed_results.csv")
+
+
+Subset 2014 info:
+regSeason2014 = compactR[which(compactR$season == 2014),]
+tourney2014 = compactT[which(compactT$season == 2014),]
+regSeason2014D = detailedR[which(detailedR$season == 2014),]
+tourney2014D = detailedT[which(detailedT$season == 2014),]
+exchange <- function(data){
+  result <- 0
+  #data <- cbind(data, result)
+  for(i in 1: nrow(data)){
+    if (data$wteam[i] > data$lteam[i]){
+      result[i] <- 0
+      temp <- data$wteam[i]
+      data$wteam[i] <- data$lteam[i]
+      data$lteam[i] <- temp
+      temp.vec <- data[i, 9:21]
+      data[i, 9:21] <- data[i, 22:34]
+      data[i, 22:34] <- temp.vec
+    }
+    else{
+      result[i] <-1
+    }
+  }
+  return(cbind(data, result))
+}
+datanew <- exchange(regSeason2014D)
+names(datanew)
