@@ -49,17 +49,20 @@ datanewS = as.data.frame(scale(datanew))
 datanewS = datanewS[, -30]
 datanewS = cbind(datanewS, datanew$result)
 datanewS=as.matrix(datanewS)
-lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, family = "binomial",alpha = 1)
+lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
+                family = "binomial",alpha = 1)
 plot(lm1)
 coef=coef(lm1)
 coef=as.numeric(coef)
 index=which(coef!=0)
-datanewS.1=as.data.frame(cbind(datanewS[,index], datanewS[,30]))
+datanewS.1=cbind(datanewS[,index], datanewS[,30])
 datanewS.1=datanewS.1[,-20]
 colnames(datanewS.1)[19]="result"
-lm2=glm(result~., data = datanewS.1, family = "binomial"(link = "logit"))
+lm2=glmnet(datanewS.1[,1:18], datanewS.1[,19], family = "binomial", standardize = FALSE)
 summary(lm2)
 pred=datanewS.1[,1:18]
-predict(lm2, pred)
+
+prediction=predict(lm2, pred, type="response" )
+
 
 ```
