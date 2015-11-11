@@ -19,6 +19,7 @@ detailedR = read.csv("regular_season_detailed_results.csv")
 
 Subset 2014 info:
 ```{r}
+#select 2014 season data
 regSeason2014 = compactR[which(compactR$season == 2014),]
 tourney2014 = compactT[which(compactT$season == 2014),]
 regSeason2014D = detailedR[which(detailedR$season == 2014),]
@@ -44,25 +45,41 @@ exchange <- function(data){
 }
 datanew <- exchange(regSeason2014D)
 names(datanew)
+#delete columns
 datanew = datanew[, -c(1, 2, 3, 5, 7)]
+#normalize data 
 datanewS = as.data.frame(scale(datanew))
 datanewS = datanewS[, -30]
+#add the response column (binary number)
 datanewS = cbind(datanewS, datanew$result)
 datanewS=as.matrix(datanewS)
+#use cv.glmnet to select coefficients
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
-                family = "binomial",alpha = 1)
+                               family = "binomial",alpha = 1)
+#plot lasso
 plot(lm1)
+#create a new dataframe for prediction
+game1=as.matrix(datanewS[1:20,-30])
+#predict probability using predict.cv.glmnet
+prediction=predict.cv.glmnet(lm1, newx=game1, type="response" )
+prediction
+
+
+
+#select the coefficients that's  nonzero from lasso
 coef=coef(lm1)
 coef=as.numeric(coef)
+#subset covariates that has nonzero coefficients 
 index=which(coef!=0)
-datanewS.1=cbind(datanewS[,index], datanewS[,30])
-datanewS.1=datanewS.1[,-20]
-colnames(datanewS.1)[19]="result"
-lm2=glmnet(datanewS.1[,1:18], datanewS.1[,19], family = "binomial", standardize = FALSE)
-summary(lm2)
-pred=datanewS.1[,1:18]
+#store them as a new dataframe
+datanewS.1=cbind(datanewS[,index])
 
-prediction=predict(lm2, pred, type="response" )
+colnames(datanewS.1)[19]="result"
+#fit new dataframe into new glm 
+lm2=glm(datanewS.1[,19]~datanewS.1[,1:18], family = "binomial")
+summary(lm2)
+
+
 
 
 ```
