@@ -1,13 +1,15 @@
 ---
 title: "Project Work"
 author: "SakaiAtMidnight"
-date: "November 4, 2015"
+date: "November 4, 2014"
 output: pdf_document
 ---
 
 We load the data:
 ```{r}
 library(glmnet)
+library(stringr)
+library(plyr)
 teams = read.csv("teams.csv")
 seasons = read.csv("seasons.csv")
 compactR = read.csv("regular_season_compact_results.csv")
@@ -23,15 +25,25 @@ regSeason2014 = compactR[which(compactR$season == 2014),]
 tourney2014 = compactT[which(compactT$season == 2014),]
 regSeason2014D = detailedR[which(detailedR$season == 2014),]
 tourney2014D = detailedT[which(detailedT$season == 2014),]
+
+
+ChangeName <- function(df){
+  names(df) <- str_replace_all(names(df), '^w', 'a.')
+  names(df) <- str_replace_all(names(df), '^l', 'b.')
+  return(df)
+}
+
+regSeason2014D <- ChangeName(regSeason2014D)
+
 exchange <- function(data){
   result <- 0
   #data <- cbind(data, result)
   for(i in 1: nrow(data)){
-    if (data$wteam[i] > data$lteam[i]){
+    if (data$a.team[i] > data$b.team[i]){
       result[i] <- 0
-      temp <- data$wteam[i]
-      data$wteam[i] <- data$lteam[i]
-      data$lteam[i] <- temp
+      temp <- data$a.team[i]
+      data$a.team[i] <- data$b.team[i]
+      data$b.team[i] <- temp
       temp.vec <- data[i, 9:21]
       data[i, 9:21] <- data[i, 22:34]
       data[i, 22:34] <- temp.vec
@@ -42,27 +54,53 @@ exchange <- function(data){
   }
   return(cbind(data, result))
 }
+
 datanew <- exchange(regSeason2014D)
+
+library(stringr)
+
+
+average <- function(data, index1, index2){
+  data$season <- NULL
+  data$daynum <- NULL
+  data$a.loc <- NULL
+  team.a <- str_detect(names(data),'^a') | str_detect(names(data),'numot')
+  team.b <- str_detect(names(data),'^b') | str_detect(names(data),'numot')
+  
+  index1.a <- data[str_detect(data$a.team, index1), team.a]
+  index1.b <- data[str_detect(data$b.team, index1), team.b]
+  
+  names(index1.a) <- str_replace_all(names(index1.a), '^a.', '')
+  names(index1.b) <- str_replace_all(names(index1.b), '^b.', '')
+  index1.mean <- apply(rbind(index1.a,index1.b),2,mean)[-1]
+  
+  index2.a <- data[str_detect(data$a.team, index2), team.a]
+  index2.b <- data[str_detect(data$a.team, index2), team.b]
+  
+  names(index2.a) <- str_replace_all(names(index2.a), '^a.', '')
+  names(index2.b) <- str_replace_all(names(index2.b), '^b.', '')
+  index2.mean <- apply(rbind(index2.a,index2.b),2,mean)[-1]
+  
+  data$a.team <- NULL
+  data$b.team <- NULL
+
+  output <- c(index1.mean[1],index2.mean[1],mean(index1.mean[2],index1.mean[2]), index1.mean[-(1:2)],index2.mean[-(1:2)])
+  names(output) <- names(data)
+  return(output)
+}
+
 names(datanew)
-datanew = datanew[, -c(1, 2, 3, 5, 7)]
-datanewS = as.data.frame(scale(datanew))
+datanewS = datanew[, -c(1, 2, 3, 5, 7)]
+datanewS = as.data.frame(scale(datanewS))
 datanewS = datanewS[, -30]
 datanewS = cbind(datanewS, datanew$result)
-datanewS=as.matrix(datanewS)
+datanewS = as.matrix(datanewS)
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 1)
-plot(lm1)
-coef=coef(lm1)
-coef=as.numeric(coef)
-index=which(coef!=0)
-datanewS.1=cbind(datanewS[,index], datanewS[,30])
-datanewS.1=datanewS.1[,-20]
-colnames(datanewS.1)[19]="result"
-lm2=glmnet(datanewS.1[,1:18], datanewS.1[,19], family = "binomial", standardize = FALSE)
-summary(lm2)
-pred=datanewS.1[,1:18]
+coef(lm1)
 
-prediction=predict(lm2, pred, type="response" )
-
+pred <- round(predict(lm1, datanewS[,1:29], type = 'response'))
+table(pred, datanewS[,30])
 
 ```
+
