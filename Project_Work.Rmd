@@ -1,7 +1,7 @@
 ---
 title: "Project Work"
 author: "SakaiAtMidnight"
-date: "November 4, 2014"
+date: "November 4, 2012"
 output: pdf_document
 ---
 
@@ -19,13 +19,13 @@ detailedT = read.csv("tourney_detailed_results.csv")
 detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
-Subset 2014 info:
+Subset 2012 info:
 ```{r}
-#select 2014 season data
-regSeason2014 = compactR[which(compactR$season == 2014),]
-tourney2014 = compactT[which(compactT$season == 2014),]
-regSeason2014D = detailedR[which(detailedR$season == 2014),]
-tourney2014D = detailedT[which(detailedT$season == 2014),]
+#select 2012 season data
+regSeason2012 = compactR[which(compactR$season == 2012),]
+tourney2012 = compactT[which(compactT$season == 2012),]
+regSeason2012D = detailedR[which(detailedR$season == 2012),]
+tourney2012D = detailedT[which(detailedT$season == 2012),]
 
 
 ChangeName <- function(df){
@@ -34,7 +34,7 @@ ChangeName <- function(df){
   return(df)
 }
 
-regSeason2014D <- ChangeName(regSeason2014D)
+regSeason2012D <- ChangeName(regSeason2012D)
 
 exchange <- function(data){
   result <- 0
@@ -56,7 +56,7 @@ exchange <- function(data){
   return(cbind(data, result))
 }
 
-datanew <- exchange(regSeason2014D)
+datanew <- exchange(regSeason2012D)
 
 library(stringr)
 
@@ -71,23 +71,21 @@ average <- function(data, index1, index2){
   index1.a <- data[str_detect(data$a.team, index1), team.a]
   index1.b <- data[str_detect(data$b.team, index1), team.b]
   
-  names(index1.a) <- str_replace_all(names(index1.a), '^a.', '')
-  names(index1.b) <- str_replace_all(names(index1.b), '^b.', '')
-  index1.mean <- apply(rbind(index1.a,index1.b),2,mean)[-1]
-  
+  index1.mean <- (apply(index1.a,2,sum)+apply(index1.b,2,sum))/(nrow(index1.a)+nrow(index1.b))
+  index1.mean <- index1.mean[-1]
   index2.a <- data[str_detect(data$a.team, index2), team.a]
   index2.b <- data[str_detect(data$a.team, index2), team.b]
-  
-  names(index2.a) <- str_replace_all(names(index2.a), '^a.', '')
-  names(index2.b) <- str_replace_all(names(index2.b), '^b.', '')
-  index2.mean <- apply(rbind(index2.a,index2.b),2,mean)[-1]
+  index2.mean <- (apply(index2.a,2,sum)+apply(index2.b,2,sum))/(nrow(index2.a)+nrow(index2.b))
+  index2.mean <- index2.mean[-1]
   
   data$a.team <- NULL
   data$b.team <- NULL
 
   output <- c(index1.mean[1],index2.mean[1],mean(index1.mean[2],index1.mean[2]), index1.mean[-(1:2)],index2.mean[-(1:2)])
+  
+  
   names(output) <- names(data)
-  return(output)
+  return(as.matrix(output))
 }
 
 names(datanew)
@@ -102,33 +100,40 @@ datanewS = cbind(datanewS, datanew$result)
 
 datanewS = as.matrix(datanewS)
 
-#use cv.glmnet to select coefficients
+# LASSO
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
-                               family = "binomial",alpha = 1)
-#plot lasso
-plot(lm1)
-#create a new dataframe for prediction
-game1=as.matrix(datanewS[1:20,-30])
-#predict probability using predict.cv.glmnet
-prediction=predict.cv.glmnet(lm1, newx=game1, type="response" )
-prediction
+                               family = "binomial",alpha = 1) 
+
+outcome1 <- rep(NA,nrow(tourney2012))
+for (i in 1:nrow(tourney2012)){
+  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+  outcome1[i] <- predict(lm1,t(game),type='response')
+}
+sum(outcome1 >=0.5)/67
+
+# ELASTIC
+lm2 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
+                family = "binomial",alpha = 0.5) 
+
+outcome2 <- rep(NA,nrow(tourney2012))
+for (i in 1:nrow(tourney2012)){
+  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+  outcome2[i] <- predict(lm2,t(game),type='response')
+}
+sum(outcome2 >=0.5)/67
+
+# RIDGE
+lm3 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
+                family = "binomial",alpha = 0) 
+outcome3 <- rep(NA,nrow(tourney2012))
+for (i in 1:nrow(tourney2012)){
+  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+  outcome3[i] <- predict(lm3,t(game),type='response')
+}
+sum(outcome3 >=0.5)/67
 
 
 
-#select the coefficients that's  nonzero from lasso
-coef=coef(lm1)
-coef=as.numeric(coef)
-#subset covariates that has nonzero coefficients 
-index=which(coef!=0)
-#store them as a new dataframe
-datanewS.1=cbind(datanewS[,index])
-
-colnames(datanewS.1)[19]="result"
-
-
-
-pred <- round(predict(lm1, datanewS[,1:29], type = 'response'))
-table(pred, datanewS[,30])
 
 ```
 
