@@ -19,6 +19,16 @@ detailedT = read.csv("tourney_detailed_results.csv")
 detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
+Subsetting Tournament into Rounds:
+```{r}
+firstFour = tourney2014D[1:4,]
+firstRound = tourney2014D[5:36,]
+secondRound = tourney2014D[37:52,]
+sweetSixteen = tourney2014D[53:60,]
+eliteEight = tourney2014D[61:64,]
+finalFour = tourney2014D[65:67,]
+```
+
 Subset 2012 info:
 ```{r}
 #select 2012 season data
