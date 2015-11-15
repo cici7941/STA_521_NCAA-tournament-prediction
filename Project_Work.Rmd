@@ -19,14 +19,39 @@ detailedT = read.csv("tourney_detailed_results.csv")
 detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
+Including Seeds:
+```{r}
+seeds = read.csv("tourney_seeds.csv")
+seeds2014 = seeds[which(seeds$season == 2014),]
+tourney2014D = cbind(cbind(tourney2014D, rep(0, dim(tourney2014D)[1])),
+                     rep(0, dim(tourney2014D)[1]))
+colnames(tourney2014D)[35:36] = c("wSeed", "lSeed")
+tourney2014D = tourney2014D[, c(1:2, 35, 3:4, 36, 5:34)]
+for(i in 1:dim(tourney2014D)[1]){
+  tourney2014D[i, "wSeed"] = as.character(seeds2014[which(seeds2014$team == tourney2014D$wteam[i]),"seed"])
+  tourney2014D[i, "lSeed"] = as.character(seeds2014[which(seeds2014$team == tourney2014D$lteam[i]),"seed"])
+}
+```
+
 Subsetting Tournament into Rounds:
 ```{r}
 firstFour = tourney2014D[1:4,]
+firstFourWinners = firstFour[,c("wSeed", "wteam")]
+
 firstRound = tourney2014D[5:36,]
+firstRoundWinners = firstRound[,c("wSeed", "wteam")]
+
 secondRound = tourney2014D[37:52,]
+secondRoundWinners = secondRound[,c("wSeed", "wteam")]
+
 sweetSixteen = tourney2014D[53:60,]
+sweetSixteenWinners = sweetSixteen[,c("wSeed", "wteam")]
+
 eliteEight = tourney2014D[61:64,]
+eliteEightWinners = eliteEight[,c("wSeed", "wteam")]
+
 finalFour = tourney2014D[65:67,]
+finalFourWinners = finalFour[,c("wSeed", "wteam")]
 ```
 
 Subset 2012 info:
@@ -35,7 +60,7 @@ Subset 2012 info:
 regSeason2012 = compactR[which(compactR$season == 2012),]
 tourney2012 = compactT[which(compactT$season == 2012),]
 regSeason2012D = detailedR[which(detailedR$season == 2012),]
-tourney2012D = detailedT[which(detailedT$season == 2012),]
+tourney2014D = detailedT[which(detailedT$season == 2014),]
 
 
 ChangeName <- function(df){
