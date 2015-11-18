@@ -242,6 +242,7 @@ sum(outcome4 >=0.5)/67
 ```{r}
 ###First round result
 library(stringr)
+#set the seed in the order
 seed <- paste0(rep(c("W","X","Y","Z"), each = 16),
                c("01",16,"08","09","05",12,"04",13,"06",11,"03",14,"07",10,"02",15))
 seed.four <- firstFour$wSeed
@@ -259,14 +260,15 @@ for (i in 1:length(seed)){
   }
 }
 regSeason2014 <- ChangeName(regSeason2014D)
-firstround.winners <- function(firstround, data,seed){
+#input: firstround teamid, regular season data, seed order, model
+firstround.winners <- function(firstround, data,seed,model){
   id <- matrix(firstround,ncol = 2, byrow = TRUE)
   seed <- matrix(seed, ncol = 2, byrow = TRUE)
   win <- 0; game <- 0
   seedWinner <- 0
   for(i in 1:nrow(id)){
     game <- average(data, id[i,1],id[i,2])
-    win[i] <- predict(lm1, t(game), type = "response")
+    win[i] <- predict(model, t(game), type = "response")
     if(win[i] >= 0.5){
       win[i] <- id[i,1]
       seedWinner[i] <- seed[i,1]
@@ -280,7 +282,12 @@ firstround.winners <- function(firstround, data,seed){
                        Zseed=seedWinner[25:32],Zwinner=win[25:32])
   return(winner)
 }
-firstround.winners(as.character(firstround), regSeason2014D,seed)
+#predict firstround of 2014 tournament competition with model lasso
+firstround.winners(as.character(firstround), regSeason2014D,seed,lm1)
+#predict firstround of 2014 tournament competition with model Elastic
+firstround.winners(as.character(firstround), regSeason2014D,seed,lm2)
+#predict firstround of 2014 tournament competition with model ridge regression
+firstround.winners(as.character(firstround), regSeason2014D,seed,lm3)
 ```
 
 
