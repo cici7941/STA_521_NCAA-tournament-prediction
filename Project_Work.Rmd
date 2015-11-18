@@ -1,7 +1,7 @@
 ---
 title: "Project Work"
 author: "SakaiAtMidnight"
-date: "November 4, 2012"
+date: "November 4, 2014"
 output: pdf_document
 ---
 
@@ -19,13 +19,13 @@ detailedT = read.csv("tourney_detailed_results.csv")
 detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
-Subset 2012 info:
+Subset 2014 info:
 ```{r}
-#select 2012 season data
-regSeason2012 = compactR[which(compactR$season == 2012),]
-tourney2012 = compactT[which(compactT$season == 2012),]
-regSeason2012D = detailedR[which(detailedR$season == 2012),]
-tourney2012D = detailedT[which(detailedT$season == 2012),]
+#select 2014 season data
+regSeason2014 = compactR[which(compactR$season == 2014),]
+tourney2014 = compactT[which(compactT$season == 2014),]
+regSeason2014D = detailedR[which(detailedR$season == 2014),]
+tourney2014D = detailedT[which(detailedT$season == 2014),]
 
 
 ChangeName <- function(df){
@@ -34,7 +34,7 @@ ChangeName <- function(df){
   return(df)
 }
 
-regSeason2012D <- ChangeName(regSeason2012D)
+regSeason2014D <- ChangeName(regSeason2014D)
 
 exchange <- function(data){
   result <- 0
@@ -56,7 +56,7 @@ exchange <- function(data){
   return(cbind(data, result))
 }
 
-datanew <- exchange(regSeason2012D)
+datanew <- exchange(regSeason2014D)
 
 library(stringr)
 
@@ -102,11 +102,27 @@ datanewS = as.matrix(datanewS)
 
 # LASSO
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
-                               family = "binomial",alpha = 1) 
+                               family = "binomial",alpha = 1, 
+                type.measure = "auc") 
+plot(lm1)
 
-outcome1 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+fit <- glm(data[,28]~.,data=as.data.frame(data[,1:27]),family = 'binomial')
+library(arm)
+fit <- glm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
+fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
+
+model.step <- step(fit,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE)
+
+outcome4 <- rep(NA,nrow(tourney2014))
+for (i in 1:nrow(tourney2014)){
+  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
+  outcome4[i] <- predict(fit,as.data.frame(t(game)),type='response')
+}
+sum(outcome4 >=0.5)/67
+
+outcome1 <- rep(NA,nrow(tourney2014))
+for (i in 1:nrow(tourney2014)){
+  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
   outcome1[i] <- predict(lm1,t(game),type='response')
 }
 sum(outcome1 >=0.5)/67
@@ -115,9 +131,9 @@ sum(outcome1 >=0.5)/67
 lm2 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 0.5) 
 
-outcome2 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+outcome2 <- rep(NA,nrow(tourney2014))
+for (i in 1:nrow(tourney2014)){
+  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
   outcome2[i] <- predict(lm2,t(game),type='response')
 }
 sum(outcome2 >=0.5)/67
@@ -125,15 +141,11 @@ sum(outcome2 >=0.5)/67
 # RIDGE
 lm3 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 0) 
-outcome3 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+outcome3 <- rep(NA,nrow(tourney2014))
+for (i in 1:nrow(tourney2014)){
+  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
   outcome3[i] <- predict(lm3,t(game),type='response')
 }
 sum(outcome3 >=0.5)/67
-
-
-
-
 ```
 
