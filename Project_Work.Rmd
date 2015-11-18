@@ -77,18 +77,18 @@ finalFour = tourney2014D[65:67,]
 #extract final four teams
 finalFourWinners = finalFour[,c("wSeed", "wteam")]
 ```
-
-Rename the columns
 ```{r}
-format <- function(df){
 #replace 'w' and 'l' with 'a' and 'b'
 ChangeName <- function(df){
   names(df) <- str_replace_all(names(df), '^w', 'a.')
   names(df) <- str_replace_all(names(df), '^l', 'b.')
   return(df)
 }
-
-df <- ChangeName(df)
+regSeason2014D <- ChangeName(regSeason2014D)
+```
+Rename the columns
+```{r}
+format <- function(df){
 #write a function named exchange which takes:
 #input: data
 #output: exchange team a and team b by a larger team ID
@@ -226,6 +226,7 @@ for (i in 1:nrow(tourney2014D)){
 #calculate probability that the model gives correct prediction
 sum(outcome3 >=0.5)/67
 
+library(arm)
 #run Bayesian generalized linear models
 fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
 # use stepwise to choose covariates
@@ -238,4 +239,48 @@ for (i in 1:nrow(tourney2014)){
 }
 sum(outcome4 >=0.5)/67
 ```
+```{r}
+###First round result
+library(stringr)
+seed <- paste0(rep(c("W","X","Y","Z"), each = 16),
+               c("01",16,"08","09","05",12,"04",13,"06",11,"03",14,"07",10,"02",15))
+seed.four <- firstFour$wSeed
+seed[which(seed == "X16")]=seed.four[1]
+seed[which(seed == "Y12")]=seed.four[2]
+seed[which(seed == "Y16")]=seed.four[3]
+seed[which(seed == "Y11")]=seed.four[4]
+firstround <- NULL
+for (i in 1:length(seed)){
+  if(seed[i] %in% firstRound$wSeed){
+    firstround <- c(firstround,firstRound[which(firstRound$wSeed == seed[i]),]$wteam)
+  }
+  else if(seed[i]  %in% firstRound$lSeed){
+    firstround <- c(firstround,firstRound[which(firstRound$lSeed == seed[i]),]$lteam)
+  }
+}
+regSeason2014 <- ChangeName(regSeason2014D)
+firstround.winners <- function(firstround, data,seed){
+  id <- matrix(firstround,ncol = 2, byrow = TRUE)
+  seed <- matrix(seed, ncol = 2, byrow = TRUE)
+  win <- 0; game <- 0
+  seedWinner <- 0
+  for(i in 1:nrow(id)){
+    game <- average(data, id[i,1],id[i,2])
+    win[i] <- predict(lm1, t(game), type = "response")
+    if(win[i] >= 0.5){
+      win[i] <- id[i,1]
+      seedWinner[i] <- seed[i,1]
+    }else{
+      win[i] <- id[i,2]
+      seedWinner[i] <- seed[i,2]
+    }
+  }
+  winner <- data.frame(Wseed=seedWinner[1:8],Wwinner=win[1:8],Xseed=seedWinner[9:16],
+                       Xwinner=win[9:16],Yseed=seedWinner[17:24],Ywinner=win[17:24],
+                       Zseed=seedWinner[25:32],Zwinner=win[25:32])
+  return(winner)
+}
+firstround.winners(as.character(firstround), regSeason2014D,seed)
+```
+
 
