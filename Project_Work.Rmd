@@ -10,23 +10,37 @@ We load the data:
 library(glmnet)
 library(stringr)
 library(plyr)
+#read in teams.csv data and store them as teams
 teams = read.csv("teams.csv")
+#read in regular seasons data about tournament regions
 seasons = read.csv("seasons.csv")
+#read in regular seasons data of compact results
 compactR = read.csv("regular_season_compact_results.csv")
-#detailedR
+#read in tournament compact results
 compactT = read.csv("tourney_compact_results.csv")
+#read in detailed results of the tournament
 detailedT = read.csv("tourney_detailed_results.csv")
+#read in regular seasons detailed results
 detailedR = read.csv("regular_season_detailed_results.csv")
 ```
 
 Including Seeds:
 ```{r}
 seeds = read.csv("tourney_seeds.csv")
+
+#extract seeds from 2014 tournament
 seeds2014 = seeds[which(seeds$season == 2014),]
+
+#subset 2014 tournament details and store it as tourney2014D
+tourney2014D = detailedT[which(detailedT$season == 2014),]
+
 tourney2014D = cbind(cbind(tourney2014D, rep(0, dim(tourney2014D)[1])),
                      rep(0, dim(tourney2014D)[1]))
 colnames(tourney2014D)[35:36] = c("wSeed", "lSeed")
+#reorganize the columns to include "wSeed" and "lSeed"
 tourney2014D = tourney2014D[, c(1:2, 35, 3:4, 36, 5:34)]
+
+#extract seeds numbers and store them into tournament data
 for(i in 1:dim(tourney2014D)[1]){
   tourney2014D[i, "wSeed"] = as.character(seeds2014[which(seeds2014$team == tourney2014D$wteam[i]),"seed"])
   tourney2014D[i, "lSeed"] = as.character(seeds2014[which(seeds2014$team == tourney2014D$lteam[i]),"seed"])
@@ -35,52 +49,76 @@ for(i in 1:dim(tourney2014D)[1]){
 
 Subsetting Tournament into Rounds:
 ```{r}
+#subset first four tournament teams 
 firstFour = tourney2014D[1:4,]
+#extract first four winners
 firstFourWinners = firstFour[,c("wSeed", "wteam")]
 
+#subset first round data
 firstRound = tourney2014D[5:36,]
+#extract first round winners
 firstRoundWinners = firstRound[,c("wSeed", "wteam")]
 
+#subset second round data
 secondRound = tourney2014D[37:52,]
+#extract second round winners
 secondRoundWinners = secondRound[,c("wSeed", "wteam")]
 
+#subset sweet sixteen data
 sweetSixteen = tourney2014D[53:60,]
+#extract sweet sixteen winning teams
 sweetSixteenWinners = sweetSixteen[,c("wSeed", "wteam")]
 
+#subset elite eight data
 eliteEight = tourney2014D[61:64,]
+#extract elite eight winning teams
 eliteEightWinners = eliteEight[,c("wSeed", "wteam")]
 
+#subset final four data
 finalFour = tourney2014D[65:67,]
+#extract final four teams
 finalFourWinners = finalFour[,c("wSeed", "wteam")]
 ```
 
 Subset 2012 info:
 ```{r}
-#select 2012 season data
+#select 2012 regular season data
 regSeason2012 = compactR[which(compactR$season == 2012),]
+#select 2012 tournament data
 tourney2012 = compactT[which(compactT$season == 2012),]
+#select 2012 regular season data
 regSeason2012D = detailedR[which(detailedR$season == 2012),]
-tourney2014D = detailedT[which(detailedT$season == 2014),]
 
 
+#replace 'w' and 'l' with 'a' and 'b'
 ChangeName <- function(df){
   names(df) <- str_replace_all(names(df), '^w', 'a.')
   names(df) <- str_replace_all(names(df), '^l', 'b.')
   return(df)
 }
 
+#apply the function with regular season 2012 data
 regSeason2012D <- ChangeName(regSeason2012D)
 
+#write a function named exchange which takes:
+#input: data
+#output: exchange team a and team b by a larger team ID
+#exchange corresponding results of team a and team b after team ID is changed
 exchange <- function(data){
   result <- 0
   #data <- cbind(data, result)
   for(i in 1: nrow(data)){
     if (data$a.team[i] > data$b.team[i]){
       result[i] <- 0
+      #store a.team ID as temp
       temp <- data$a.team[i]
+      #assign b.team ID as a.team ID
       data$a.team[i] <- data$b.team[i]
+      #reassign b.team ID with temp
       data$b.team[i] <- temp
+      #store team a's data as temp.vec
       temp.vec <- data[i, 9:21]
+      #exchange team a's data with team b's
       data[i, 9:21] <- data[i, 22:34]
       data[i, 22:34] <- temp.vec
     }
@@ -91,11 +129,14 @@ exchange <- function(data){
   return(cbind(data, result))
 }
 
+#apply exchange function to 2012 regular seasons results
 datanew <- exchange(regSeason2012D)
 
 library(stringr)
 
-
+#write an function named average which takes:
+#input: data, index1 (first team ID) and index2 (second team ID)
+#output: average seasonal results of team a and team b 
 average <- function(data, index1, index2){
   data$season <- NULL
   data$daynum <- NULL
@@ -105,17 +146,20 @@ average <- function(data, index1, index2){
   
   index1.a <- data[str_detect(data$a.team, index1), team.a]
   index1.b <- data[str_detect(data$b.team, index1), team.b]
-  
+ #average out relevant data of first team using apply() 
   index1.mean <- (apply(index1.a,2,sum)+apply(index1.b,2,sum))/(nrow(index1.a)+nrow(index1.b))
+  #remove the first row of team ID
   index1.mean <- index1.mean[-1]
   index2.a <- data[str_detect(data$a.team, index2), team.a]
   index2.b <- data[str_detect(data$a.team, index2), team.b]
+ #average out relevant data of second team using apply()
   index2.mean <- (apply(index2.a,2,sum)+apply(index2.b,2,sum))/(nrow(index2.a)+nrow(index2.b))
+  #remove the first row of team ID
   index2.mean <- index2.mean[-1]
   
   data$a.team <- NULL
   data$b.team <- NULL
-
+  #return an output of average statistics of two teams
   output <- c(index1.mean[1],index2.mean[1],mean(index1.mean[2],index1.mean[2]), index1.mean[-(1:2)],index2.mean[-(1:2)])
   
   
@@ -132,39 +176,58 @@ datanewS = as.data.frame(scale(datanew))
 datanewS = datanewS[, -30]
 #add the response column (binary number)
 datanewS = cbind(datanewS, datanew$result)
-
+#store datanewS as a matrix
 datanewS = as.matrix(datanewS)
 
-# LASSO
+# run LASSO regression with cross validation
+# alpha=1
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                                family = "binomial",alpha = 1) 
 
+#predict 2012 tournament results 
 outcome1 <- rep(NA,nrow(tourney2012))
 for (i in 1:nrow(tourney2012)){
+#apply function `average` on 2012 tournament teams
+#to get average regular seasons data 
   game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+#predict tournament results using predict() 
   outcome1[i] <- predict(lm1,t(game),type='response')
 }
+#calculate probability that the model gives correct prediction
 sum(outcome1 >=0.5)/67
 
-# ELASTIC
+# run ELASTIC regression with cross validation
+# alpha=0.5
 lm2 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 0.5) 
 
 outcome2 <- rep(NA,nrow(tourney2012))
 for (i in 1:nrow(tourney2012)){
+#apply function `average` on 2012 tournament teams 
+#to get average regular seasons data    
   game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+ #predict tournament results using predict()
   outcome2[i] <- predict(lm2,t(game),type='response')
 }
+#calculate probability that the model gives correct prediction
 sum(outcome2 >=0.5)/67
 
-# RIDGE
+
+
+#run RIDGE regression with cross validation
 lm3 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 0) 
+
 outcome3 <- rep(NA,nrow(tourney2012))
 for (i in 1:nrow(tourney2012)){
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+#apply function `average` on 2012 tournament teams 
+#to get average regular seasons data 
+ game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+ #predict tournament results using predict()
   outcome3[i] <- predict(lm3,t(game),type='response')
 }
+
+#calculate probability that the model gives correct prediction
 sum(outcome3 >=0.5)/67
 
 
