@@ -10,41 +10,30 @@ We load the data:
 library(glmnet)
 library(stringr)
 library(plyr)
-#read in teams.csv data and store them as teams
-teams = read.csv("teams.csv")
-#read in regular seasons data about tournament regions
-seasons = read.csv("seasons.csv")
-#read in regular seasons data of compact results
-compactR = read.csv("regular_season_compact_results.csv")
-#read in tournament compact results
-compactT = read.csv("tourney_compact_results.csv")
+
 #read in detailed results of the tournament
 detailedT = read.csv("tourney_detailed_results.csv")
 #read in regular seasons detailed results
 detailedR = read.csv("regular_season_detailed_results.csv")
+#read in seeds data
+seeds = read.csv("tourney_seeds.csv")
 ```
 
-<<<<<<< HEAD
+
 Subset 2014 info:
 ```{r}
-#select 2014 season data
-regSeason2014 = compactR[which(compactR$season == 2014),]
-tourney2014 = compactT[which(compactT$season == 2014),]
+#select 2014 regular season data
 regSeason2014D = detailedR[which(detailedR$season == 2014),]
+#extract 2014 tournament season data
 tourney2014D = detailedT[which(detailedT$season == 2014),]
-=======
+#extract 2014 tournament seeds data
+seeds2014 = seeds[which(seeds$season == 2014),]
+```
 Including Seeds:
 ```{r}
-seeds = read.csv("tourney_seeds.csv")
-
-#extract seeds from 2014 tournament
-seeds2014 = seeds[which(seeds$season == 2014),]
-
-#subset 2014 tournament details and store it as tourney2014D
-tourney2014D = detailedT[which(detailedT$season == 2014),]
-
 tourney2014D = cbind(cbind(tourney2014D, rep(0, dim(tourney2014D)[1])),
                      rep(0, dim(tourney2014D)[1]))
+
 colnames(tourney2014D)[35:36] = c("wSeed", "lSeed")
 #reorganize the columns to include "wSeed" and "lSeed"
 tourney2014D = tourney2014D[, c(1:2, 35, 3:4, 36, 5:34)]
@@ -89,17 +78,9 @@ finalFour = tourney2014D[65:67,]
 finalFourWinners = finalFour[,c("wSeed", "wteam")]
 ```
 
-Subset 2012 info:
+Rename the columns
 ```{r}
-#select 2012 regular season data
-regSeason2012 = compactR[which(compactR$season == 2012),]
-#select 2012 tournament data
-tourney2012 = compactT[which(compactT$season == 2012),]
-#select 2012 regular season data
-regSeason2012D = detailedR[which(detailedR$season == 2012),]
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
-
-
+format <- function(df){
 #replace 'w' and 'l' with 'a' and 'b'
 ChangeName <- function(df){
   names(df) <- str_replace_all(names(df), '^w', 'a.')
@@ -107,13 +88,7 @@ ChangeName <- function(df){
   return(df)
 }
 
-<<<<<<< HEAD
-regSeason2014D <- ChangeName(regSeason2014D)
-=======
-#apply the function with regular season 2012 data
-regSeason2012D <- ChangeName(regSeason2012D)
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
-
+df <- ChangeName(df)
 #write a function named exchange which takes:
 #input: data
 #output: exchange team a and team b by a larger team ID
@@ -142,13 +117,24 @@ exchange <- function(data){
   }
   return(cbind(data, result))
 }
+  datanew <- exchange(df)
+  #delete columns with unnecessary information
+datanew = datanew[, -c(1,2,3,5,7)]
+#normalize data 
+datanewS = as.data.frame(scale(datanew))
+datanewS = datanewS[, -30]
+#add the response column (binary number)
+datanewS = cbind(datanewS, datanew$result)
+#store datanewS as a matrix
+datanewS = as.matrix(datanewS)
+return(datanewS)
+}
 
-<<<<<<< HEAD
-datanew <- exchange(regSeason2014D)
-=======
-#apply exchange function to 2012 regular seasons results
-datanew <- exchange(regSeason2012D)
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
+datanewS <- format(regSeason2014D)
+
+
+
+#apply exchange function to 2014 regular seasons results
 
 library(stringr)
 
@@ -185,10 +171,9 @@ average <- function(data, index1, index2){
   return(as.matrix(output))
 }
 
-names(datanew)
 
-#delete columns
-datanew = datanew[, -c(1, 2, 3, 5, 7)]
+#delete columns with unnecessary information
+datanew = datanew[, -c(1,2,3,5,7)]
 #normalize data 
 datanewS = as.data.frame(scale(datanew))
 datanewS = datanewS[, -30]
@@ -198,39 +183,18 @@ datanewS = cbind(datanewS, datanew$result)
 datanewS = as.matrix(datanewS)
 
 # run LASSO regression with cross validation
-# alpha=1
+# alpha = 1
 lm1 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                                family = "binomial",alpha = 1, 
                 type.measure = "auc") 
-plot(lm1)
 
-<<<<<<< HEAD
-fit <- glm(data[,28]~.,data=as.data.frame(data[,1:27]),family = 'binomial')
-library(arm)
-fit <- glm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
-fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
-
-model.step <- step(fit,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE)
-
-outcome4 <- rep(NA,nrow(tourney2014))
-for (i in 1:nrow(tourney2014)){
-  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
-  outcome4[i] <- predict(fit,as.data.frame(t(game)),type='response')
-}
-sum(outcome4 >=0.5)/67
-
-outcome1 <- rep(NA,nrow(tourney2014))
-for (i in 1:nrow(tourney2014)){
-  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
-=======
-#predict 2012 tournament results 
-outcome1 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-#apply function `average` on 2012 tournament teams
+#predict 2014 tournament results 
+outcome1 <- rep(NA,nrow(tourney2014D))
+for (i in 1:nrow(tourney2014D)){
+#apply function `average` on 2014 tournament teams
 #to get average regular seasons data 
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+  game <-average(regSeason2014D,as.character(tourney2014D[i,'wteam']),as.character(tourney2014D[i,'lteam']))
 #predict tournament results using predict() 
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
   outcome1[i] <- predict(lm1,t(game),type='response')
 }
 #calculate probability that the model gives correct prediction
@@ -239,47 +203,48 @@ sum(outcome1 >=0.5)/67
 # run ELASTIC regression with cross validation
 # alpha=0.5
 lm2 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
-                family = "binomial",alpha = 0.5) 
+                family = "binomial",alpha = 0.5,
+                type.measure = "auc") 
 
-<<<<<<< HEAD
-outcome2 <- rep(NA,nrow(tourney2014))
-for (i in 1:nrow(tourney2014)){
-  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
-=======
-outcome2 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-#apply function `average` on 2012 tournament teams 
+outcome2 <- rep(NA,nrow(tourney2014D))
+for (i in 1:nrow(tourney2014D)){
+#apply function `average` on 2014 tournament teams 
 #to get average regular seasons data    
-  game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+  game <-average(regSeason2014D,as.character(tourney2014D[i,'wteam']),as.character(tourney2014D[i,'lteam']))
  #predict tournament results using predict()
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
+
   outcome2[i] <- predict(lm2,t(game),type='response')
 }
 #calculate probability that the model gives correct prediction
 sum(outcome2 >=0.5)/67
 
-
-
 #run RIDGE regression with cross validation
 lm3 = cv.glmnet(datanewS[,1:29], datanewS[,30], standardize=FALSE, 
                 family = "binomial",alpha = 0) 
-<<<<<<< HEAD
-outcome3 <- rep(NA,nrow(tourney2014))
-for (i in 1:nrow(tourney2014)){
-  game <-average(regSeason2014D,as.character(tourney2014[i,'wteam']),as.character(tourney2014[i,'lteam']))
-=======
 
-outcome3 <- rep(NA,nrow(tourney2012))
-for (i in 1:nrow(tourney2012)){
-#apply function `average` on 2012 tournament teams 
+outcome3 <- rep(NA,nrow(tourney2014D))
+for (i in 1:nrow(tourney2014D)){
+#apply function `average` on 2014 tournament teams 
 #to get average regular seasons data 
- game <-average(regSeason2012D,as.character(tourney2012[i,'wteam']),as.character(tourney2012[i,'lteam']))
+ game <-average(regSeason2014D,as.character(tourney2014D[i,'wteam']),as.character(tourney2014D[i,'lteam']))
  #predict tournament results using predict()
->>>>>>> dba16f429aef791255a8f32bb005a9bd750c2b30
+
   outcome3[i] <- predict(lm3,t(game),type='response')
 }
 
 #calculate probability that the model gives correct prediction
 sum(outcome3 >=0.5)/67
+
+#run Bayesian generalized linear models
+fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
+# use stepwise to choose covariates
+lm4 <- step(fit.bayes,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE)
+
+outcome4 <- rep(NA,nrow(tourney2014D))
+for (i in 1:nrow(tourney2014)){
+  game <-average(regSeason2014D,as.character(tourney2014D[i,'wteam']),as.character(tourney2014D[i,'lteam']))
+  outcome4[i] <- predict(fit,as.data.frame(t(game)),type='response')
+}
+sum(outcome4 >=0.5)/67
 ```
 
