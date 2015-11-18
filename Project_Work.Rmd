@@ -172,15 +172,6 @@ average <- function(data, index1, index2){
 }
 
 
-#delete columns with unnecessary information
-datanew = datanew[, -c(1,2,3,5,7)]
-#normalize data 
-datanewS = as.data.frame(scale(datanew))
-datanewS = datanewS[, -30]
-#add the response column (binary number)
-datanewS = cbind(datanewS, datanew$result)
-#store datanewS as a matrix
-datanewS = as.matrix(datanewS)
 
 # run LASSO regression with cross validation
 # alpha = 1
