@@ -48,13 +48,18 @@ for(i in 1:dim(tourney2014D)[1]){
 
 Subsetting Tournament into Rounds:
 ```{r}
+library(stringr)
 #subset first four tournament teams 
 firstFour = tourney2014D[1:4,]
 #extract first four winners
 firstFourWinners = firstFour[,c("wSeed", "wteam")]
+firstFourWinners[,1] = str_replace(firstFourWinners$wSeed, "[a-b]", "")
+
 
 #subset first round data
 firstRound = tourney2014D[5:36,]
+firstRound$wSeed = str_replace(firstRound$wSeed, "[a-b]","")
+firstRound$lSeed = str_replace(firstRound$lSeed, "[a-b]","")
 #extract first round winners
 firstRoundWinners = firstRound[,c("wSeed", "wteam")]
 
@@ -249,11 +254,11 @@ library(stringr)
 #set the seed in the order
 seed <- paste0(rep(c("W","X","Y","Z"), each = 16),
                c("01",16,"08","09","05",12,"04",13,"06",11,"03",14,"07",10,"02",15))
-seed.four <- firstFour$wSeed
-seed[which(seed == "X16")]=seed.four[1]
-seed[which(seed == "Y12")]=seed.four[2]
-seed[which(seed == "Y16")]=seed.four[3]
-seed[which(seed == "Y11")]=seed.four[4]
+#seed.four <- firstFour$wSeed
+#seed[which(seed == "X16")]=seed.four[1]
+#seed[which(seed == "Y12")]=seed.four[2]
+#seed[which(seed == "Y16")]=seed.four[3]
+#seed[which(seed == "Y11")]=seed.four[4]
 firstround <- NULL
 for (i in 1:length(seed)){
   if(seed[i] %in% firstRound$wSeed){
@@ -263,7 +268,7 @@ for (i in 1:length(seed)){
     firstround <- c(firstround,firstRound[which(firstRound$lSeed == seed[i]),]$lteam)
   }
 }
-regSeason2014 <- ChangeName(regSeason2014D)
+#regSeason2014 <- ChangeName(regSeason2014D)
 #input: firstround teamid, regular season data, seed order, model
 firstround.winners <- function(firstround, data,seed,model){
   id <- matrix(firstround,ncol = 2, byrow = TRUE)
