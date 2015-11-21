@@ -11,6 +11,7 @@ library(glmnet)
 library(stringr)
 library(plyr)
 
+
 #read in detailed results of the tournament
 detailedT = read.csv("tourney_detailed_results.csv")
 #read in regular seasons detailed results
@@ -230,15 +231,18 @@ library(arm)
 #run Bayesian generalized linear models
 fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
 # use stepwise to choose covariates
-lm4 <- step(fit.bayes,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE)
+lm4 <- suppressWarnings(step(fit.bayes,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE))
 
 outcome4 <- rep(NA,nrow(tourney2014D))
-for (i in 1:nrow(tourney2014)){
+for (i in 1:nrow(tourney2014D)){
   game <-average(regSeason2014D,as.character(tourney2014D[i,'wteam']),as.character(tourney2014D[i,'lteam']))
-  outcome4[i] <- predict(fit,as.data.frame(t(game)),type='response')
+  outcome4[i] <- predict(fit.bayes,as.data.frame(t(game)),type='response')
 }
 sum(outcome4 >=0.5)/67
+
 ```
+
+
 ```{r}
 ###First round result
 library(stringr)
@@ -288,6 +292,8 @@ firstround.winners(as.character(firstround), regSeason2014D,seed,lm1)
 firstround.winners(as.character(firstround), regSeason2014D,seed,lm2)
 #predict firstround of 2014 tournament competition with model ridge regression
 firstround.winners(as.character(firstround), regSeason2014D,seed,lm3)
+#predict firstround of 2014 tournament competition with Bayesian GLM with stepwise
+firstround.winners(as.character(firstround), regSeason2014D,seed,lm4)
 ```
 
 
