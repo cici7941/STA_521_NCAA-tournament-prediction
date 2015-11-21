@@ -115,8 +115,11 @@ Our model is going to predict the all the games in multiple editions of the NCAA
 While we worked on this project we realized that it would be extremely unlikely to predict every single game correctly so we changed our focus to predict at different levels of accuracy. This means that in addition to predicting the whole bracket, we want to assess our models' performances based on how they predicted the Final Four and the National Champion too.
 
 \section{Model 1: Logistic Regression with Lasso}
-\section{Model 2: Logistic Regression with Elastic Net}
-\section{Model 3: Blasso}
+\section{Model 2: Logistic Regression with Ridge}
+\section{Model 3: Bayesian Generalized Linear Model with Stepwise}
+
+In this step we apply stepwise method to select significant covariates using results from running Bayesian Generalized Linear Model. Specificaly, we implement stepwise method with both directions during which the selection processes from both directions converges. We implement this model with 2014 regular season data and compare the results with actual tournament results and our model prediction rate that correctly predict the actual results without factoring in the order of playing is 71.64 percent.
+
 
 \section{Data Links}
  https://www.kaggle.com/c/march-machine-learning-mania-2015
