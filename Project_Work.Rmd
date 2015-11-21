@@ -293,14 +293,64 @@ firstround.winners <- function(firstround, data,seed,model){
   return(winner)
 }
 #predict firstround of 2014 tournament competition with model lasso
-firstround.winners(as.character(firstround), regSeason2014D,seed,lm1)
+firstwinner1 <- firstround.winners(as.character(firstround), regSeason2014D,seed,lm1)
 #predict firstround of 2014 tournament competition with model Elastic
-firstround.winners(as.character(firstround), regSeason2014D,seed,lm2)
+firstwinner2 <- firstround.winners(as.character(firstround), regSeason2014D,seed,lm2)
 #predict firstround of 2014 tournament competition with model ridge regression
-firstround.winners(as.character(firstround), regSeason2014D,seed,lm3)
+firstwinner3 <- firstround.winners(as.character(firstround), regSeason2014D,seed,lm3)
 #predict firstround of 2014 tournament competition with Bayesian GLM with stepwise
-firstround.winners(as.character(firstround), regSeason2014D,seed,lm4)
+firstwinner4 <- firstround.winners(as.character(firstround), regSeason2014D,seed,lm4)
 
 ```
 
 
+###Next round result
+```{r}
+nextround.winners <- function(lastwinner, data, model){
+  seed <- matrix(as.matrix(lastwinner)[,c(1,3,5,7)])
+  id <- matrix(as.matrix(lastwinner)[,c(2,4,6,8)])
+  win <- 0; game <- 0
+  seedWinner <- 0
+  k <- seq(2,nrow(id),2)
+  for(i in k){
+    game <- average(data, id[i-1,1],id[i,1])
+    game=t(game)
+    if (class(model)[1]=="bayesglm"){
+        game=as.data.frame(game)
+        win[i/2] <- predict(model, game, type = "response")
+        }else{
+    win[i/2] <- predict(model, game, type = "response")
+    }
+    if(win[i/2] >= 0.5){
+      win[i/2] <- id[i-1,1]
+      seedWinner[i/2] <- seed[i-1,1]
+    }else{
+      win[i/2] <- id[i,1]
+      seedWinner[i/2] <- seed[i,1]
+    }
+  }
+  winner <- data.frame(Wseed=seedWinner[1:(length(win)/4)],Wwinner=win[1:(length(win)/4)],
+                       Xseed=seedWinner[(length(win)/4+1):(length(win)/2)],
+                       Xwinner=win[(length(win)/4+1):(length(win)/2)],
+                       Yseed=seedWinner[(length(win)/2+1):(length(win)*3/4)],
+                       Ywinner=win[(length(win)/2+1):(length(win)*3/4)],
+                       Zseed=seedWinner[(length(win)*3/4+1):length(win)],
+                       Zwinner=win[(length(win)*3/4+1):length(win)])
+  return(winner)
+}
+##second round result
+w1 <- nextround.winners(firstwinner1,regSeason2014D,lm1)
+w2 <- nextround.winners(firstwinner2,regSeason2014D,lm2)
+w3 <- nextround.winners(firstwinner3,regSeason2014D,lm3)
+w4 <- nextround.winners(firstwinner4,regSeason2014D,lm4)
+##third round result
+w1n <- nextround.winners(w1,regSeason2014D,lm1)
+w2n <- nextround.winners(w2,regSeason2014D,lm2)
+w3n <- nextround.winners(w3,regSeason2014D,lm3)
+w4n <- nextround.winners(w4,regSeason2014D,lm4)
+##final four
+lasso <- nextround.winners(w1n,regSeason2014D,lm1)
+elas <- nextround.winners(w2n,regSeason2014D,lm2)
+ridge <- nextround.winners(w3n,regSeason2014D,lm3)
+bayes <- nextround.winners(w4n,regSeason2014D,lm4)
+```
