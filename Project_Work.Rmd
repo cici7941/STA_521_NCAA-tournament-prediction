@@ -272,7 +272,12 @@ firstround.winners <- function(firstround, data,seed,model){
   seedWinner <- 0
   for(i in 1:nrow(id)){
     game <- average(data, id[i,1],id[i,2])
-    win[i] <- predict(model, t(game), type = "response")
+    game=t(game)
+    if (class(model)[1]=="bayesglm"){
+        game=as.data.frame(game)
+        win[i] <- predict(model, game, type = "response")
+        }else{
+    win[i] <- predict(model, game, type = "response")}
     if(win[i] >= 0.5){
       win[i] <- id[i,1]
       seedWinner[i] <- seed[i,1]
@@ -280,6 +285,7 @@ firstround.winners <- function(firstround, data,seed,model){
       win[i] <- id[i,2]
       seedWinner[i] <- seed[i,2]
     }
+        
   }
   winner <- data.frame(Wseed=seedWinner[1:8],Wwinner=win[1:8],Xseed=seedWinner[9:16],
                        Xwinner=win[9:16],Yseed=seedWinner[17:24],Ywinner=win[17:24],
@@ -294,6 +300,7 @@ firstround.winners(as.character(firstround), regSeason2014D,seed,lm2)
 firstround.winners(as.character(firstround), regSeason2014D,seed,lm3)
 #predict firstround of 2014 tournament competition with Bayesian GLM with stepwise
 firstround.winners(as.character(firstround), regSeason2014D,seed,lm4)
+
 ```
 
 
