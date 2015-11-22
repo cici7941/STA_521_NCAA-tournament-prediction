@@ -156,16 +156,52 @@ Bayesian GLM Stepwise:
 In this step we apply stepwise method to select significant covariates using results from running Bayesian Generalized Linear Model. Specificaly, we implement stepwise method with both directions during which the selection processes from both directions converges. We implement this model with 2014 regular season data and compare the results with actual tournament results and our model prediction rate that correctly predict the actual results without factoring in the order of playing is 71.64 percent.\
 
 
+
+
+
+
 \subsection{Model Predictions}
 
 Below are the results of our predictions for the last 4 NCAA tournaments:\
+
+
+
+
+
+\subsection{Account for Team Specifics and Upsets}
+
+To account for team specifics and upsets that our model has not explained, we examine the history of every paired teams in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since most of times two teams in different regions did not play against each other in regular seasons, out of 67 games, only 19 teams met in the regular seasons during the past 13 years. For every team in the bracket, we use the following formula to compute probability of team A winning against team B conditional on occurences when team A and team B played in the past:
+
+(Number of Times Team A Won - Number of Times Team B Won)/(Number of Times Team A and Team B Played)
+
+
+Our results shows that 48 teams did not meet in the past regular seasons; out of 19 games, 9 teams won all the time (including winning only once), 7 teams lost all the time (including losing once), 2 teams won as many times as they lost to the opposing teams, and 1 team won three times as it lost to the opposing team. If we were only applying the probability calculated above to predict the results of a specific tournament game given A and B has played in the past, the decision rule would be if probability is greater than 0, team A wins; probability is smaller than 0, team A loses; probability=0 or probability=NA, the results cannot be determined. 
+
+Suprisingly in the results, under the circumstances when the above probability is measurable, 15 out of 19 times we would predict a right outcome. If a higher seed played against a lower seed when in the past the higher seed had won, the higher seed won in the actual tournament. The historical result somewhat explains an upset in our model prediction when the historical data shows Villanova lost to NC State in 2008 which is in consistent with the actual result that Villanova lost to NC State in the actual tournament, while our model predicts Villanova to win and show up in the final four. 
+
+This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would look into the regular season information or past tournament history to decide whether Team A will beat Team B. However, since the past information does not always predict the future, we could possibily assign weights to teams in our regression model to make it more robust. 
+
+Tim Chartier, author of Bracketology: How can math help? focuses more on team specifics to predict brackets as an example is that scores team A beats B by is related to ratings of Team A and Team B. This leaves us more inspirations to revise our model in the future. 
+
+
+
+
 
 
 \section{Model 2: Logistic Regression with Elastic Net}
 \section{Model 3: Blasso}
 
 
+
+
+
+
+
+
 \section{Data Links}
 https://www.kaggle.com/c/march-machine-learning-mania-2015
+
+\section{Reference}
+http://mathaware.org/mam/2010/essays/ChartierBracketology.pdf
 
 \end{document}
