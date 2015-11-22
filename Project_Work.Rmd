@@ -234,7 +234,7 @@ sum(outcome3 >=0.5)/67
 
 library(arm)
 #run Bayesian generalized linear models
-fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial')
+fit.bayes <- bayesglm(datanewS[,30]~.,data=as.data.frame(datanewS[,1:29]), family = 'binomial', scaled = FALSE)
 # use stepwise to choose covariates
 lm4 <- suppressWarnings(step(fit.bayes,scope=list(upper=~.,lower=~1), direction="both",trace=FALSE))
 
@@ -358,4 +358,6 @@ lasso <- nextround.winners(w1n,regSeason2014D,lm1)
 elas <- nextround.winners(w2n,regSeason2014D,lm2)
 ridge <- nextround.winners(w3n,regSeason2014D,lm3)
 bayes <- nextround.winners(w4n,regSeason2014D,lm4)
+
+
 ```
