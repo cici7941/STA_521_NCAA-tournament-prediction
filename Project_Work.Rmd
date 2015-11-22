@@ -280,9 +280,8 @@ firstround.winners <- function(firstround, data,seed,model){
     game=t(game)
     if (class(model)[1]=="bayesglm"){
         game=as.data.frame(game)
-        win[i] <- predict(model, game, type = "response")
-        }else{
-    win[i] <- predict(model, game, type = "response")}
+    }
+    win[i] <- predict(model, game, type = "response")
     if(win[i] >= 0.5){
       win[i] <- id[i,1]
       seedWinner[i] <- seed[i,1]
@@ -322,10 +321,8 @@ nextround.winners <- function(lastwinner, data, model){
     game=t(game)
     if (class(model)[1]=="bayesglm"){
         game=as.data.frame(game)
-        win[i/2] <- predict(model, game, type = "response")
-        }else{
-    win[i/2] <- predict(model, game, type = "response")
     }
+    win[i/2] <- predict(model, game, type = "response")
     if(win[i/2] >= 0.5){
       win[i/2] <- id[i-1,1]
       seedWinner[i/2] <- seed[i-1,1]
@@ -361,3 +358,49 @@ bayes <- nextround.winners(w4n,regSeason2014D,lm4)
 
 
 ```
+
+
+###Semi-final and final
+```{r}
+final <- function(lastwinner, data, model){
+  game1 <- t(average(data, matrix(lastwinner$Wwinner), matrix(lastwinner$Xwinner)))
+  game2 <- t(average(data, matrix(lastwinner$Ywinner), matrix(lastwinner$Zwinner)))
+  if (class(model)[1]=="bayesglm"){
+    game1 = as.data.frame(game1)
+    game2 = as.data.frame(game2)
+  }
+  win1 <- predict(model, game1, type = "response")
+  win2 <- predict(model, game2, type = "response")
+  if(win1 >= 0.5){
+    win1 <- lastwinner$Wwinner
+    seedWinner1 <- lastwinner$Wseed
+  }else{
+    win1 <- lastwinner$Xwinner
+    seedWinner1 <- lastwinner$Xseed
+  }
+  if(win2 >= 0.5){
+    win2 <- lastwinner$Ywinner
+    seedWinner2 <- lastwinner$Yseed
+  }else{
+    win2 <- lastwinner$Xwinner
+    seedWinner2 <- lastwinner$Zseed
+  }
+  semiwinner <- data.frame(seed = c(levels(seedWinner1),levels(seedWinner2)), 
+                           winteam = c(levels(win1),levels(win2)))
+  print(semiwinner)
+  game3 <- t(average(data, matrix(semiwinner$winteam[1]), matrix(semiwinner$winteam[2])))
+  if (class(model)[1]=="bayesglm"){
+    game3 = as.data.frame(game1)
+  }
+  win3 <- predict(model, game3, type = "response")
+  if(win3 >= 0.5){
+    win3 <- semiwinner$winteam[1]
+    seedWinner3 <- semiwinner$seed[1]
+  }else{
+    win3 <- semiwinner$winteam[2]
+    seedWinner3 <- semiwinner$seed[2]
+  }
+  champion <- data.frame(seed = levels(seedWinner3)[1], winteam = levels(win3)[1])
+  print(champion)
+  return(champion)
+}
