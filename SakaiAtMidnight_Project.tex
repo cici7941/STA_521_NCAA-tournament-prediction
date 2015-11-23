@@ -148,7 +148,15 @@ Other interesting features from this model selection include the idea that field
 
 Bayesian GLM Stepwise:
 
-In this step we apply stepwise method to select significant covariates using results from running Bayesian Generalized Linear Model. Specificaly, we implement stepwise method with both directions during which the selection processes from both directions converges. We implement this model with 2014 regular season data and compare the results with actual tournament results and our model prediction rate that correctly predict the actual results without factoring in the order of playing is 71.64 percent.\
+In this step we apply stepwise method to select significant covariates using results from running Bayesian Generalized Linear Model. The Bayesian model assumes an independent normal prior for each coefficient and performs MCMC algorithm to find the posterior of each coeffiecient. Then we select the most significant coefficients calculated by Bayesian GLM using stepwise method with both directions.
+
+In the Bayesian GLM stage, each posterior coefficient has an estimated value. However, after applying stepwise method, number of the most important coefficients results in only six, less than that from LASSO regression. It turns out that three pointers made, field goals made, free throw attempted, free throws made are the most essential winning features for a team as the coefficients values are quite large. Interestingly the results that final scores of both teams are not significant which is consistent with the results from LASSO. Similary in the stepwise analysis, as free throws made are very significant which also agrees with the LASSO results.
+
+
+
+
+
+
 
 
 \section{Predictions}
@@ -172,11 +180,11 @@ To account for team specifics and upsets that our model has not explained, we ex
 (Number of Times Team A Won - Number of Times Team B Won)/(Number of Times Team A and Team B Played)
 
 
-Our results shows that 49 teams did not meet in the past regular seasons; out of 19 games, 9 teams won all the time (including playing only once), 6 teams lost all the time (including playing only once), 2 teams won as many times as they were beat by the opposing teams, 1 team won three times as it was beat by its opposing team and 1 team lost twice as it beat the opposing team. If we were only applying the probability calculated above to predict the results of a specific tournament game given A and B has played in the past, the decision rule would be if probability is greater than 0, team A wins; probability is smaller than 0, team A loses; probability=0 or probability=NA, the results cannot be determined. 
+Our results shows that 49 teams did not meet in the past regular seasons; out of 19 games, 9 teams won all the time (including playing only once), 6 teams lost all the time (including playing only once), 2 teams won as many times as they were beat by the opposed teams, 1 team won three times as it was beat by its opposed team and 1 team lost twice as it beat the opposed team. If we were only applying the probability calculated above to predict the results of a specific tournament game given A and B has played in the past, the decision rule would be if probability is greater than 0, team A wins; probability is smaller than 0, team A loses; probability=0 or probability=NA, the results cannot be determined. 
 
-Suprisingly in the results, under the circumstances when the above probability is measurable, 14 out of 19 times we would predict a right outcome. If a higher seed played against a lower seed when in the past the higher seed had won, the higher seed won in the actual tournament with only two exceptions. The historical result somewhat explains an upset in our model prediction when the historical data shows Villanova lost to NC State in 2008 which is in consistent with the actual result that Villanova lost to NC State in the actual tournament, while our model predicts Villanova to win and show up in the final four. 
+Suprisingly in the results, under the circumstances where the above probabilities are real numbers, 14 out of 19 times we would predict a right outcome. If a higher seed played against a lower seed when in the past the higher seed had won, the higher seed won in the actual tournament with only two exceptions. The historical result somewhat explains an upset in our model prediction when the historical data shows Villanova were beat by NC State in 2008 which is in consistent with the actual tournament result, while our model predicts Villanova to win and show up in the final four. 
 
-This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would look into the regular season information or past tournament history to decide whether Team A will beat Team B. However, since the past information does not always predict the future, we could possibily assign weights to teams in our regression model to make it robust. 
+This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would look into the regular season information or past tournament history to decide whether Team A will beat Team B. However, since the past information does not always predict the future, we could possibily assign weights to teams in our regression model to adjust for the possibility of an upset that may happen. 
 
 Tim Chartier, author of Bracketology: How can math help? focuses more on team specifics to predict brackets as an example is that scores team A beats B by is related to ratings of Team A and Team B. This leaves us more inspirations to revise our model in the future. 
 
