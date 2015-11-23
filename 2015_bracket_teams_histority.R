@@ -16,7 +16,7 @@ win_all=prob[which(prob[,2]==1),]
 win_lose=prob[which(prob[,2]==0),]
 win3_lose1=prob[which(prob[,2]==0.5),]
 lose_all=prob[which(prob[,2]==-1),]
-win1_lose3=prob[which(prob[,2]==-1/3),]
+win1_lose2=prob[which(prob[,2]==-1/3),]
 history=prob[which(!is.na(prob[,2])),]
 
 count=0
@@ -32,3 +32,10 @@ for (i in 1:nrow(history)) {
 }
 
 RightProb=count/nrow(history)
+output=matrix(c(nrow(win_all),length(win3_lose1)-1,
+              length(win1_lose2)-1,nrow(win_lose),
+              nrow(lose_all), count, nrow(history),RightProb),nrow =1,ncol=8)
+colnames(output)=c("W", "W1L1", "W1L2", "W1L1","L","Count of corrected results",
+                   "Number of games played","Correct probability")
+library(xtable)
+print(xtable(as.data.frame(output)),comment=FALSE)
