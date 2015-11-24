@@ -62,6 +62,7 @@ Since we already know the resulting "true" brackets of past tournaments, we can 
 \section{Methodology}
 \label{gen_inst}
 
+\subsection{Model Setup / Data Manipulation}
 All of our four models are going to be a variation of logistic regression. We are going to compare the predictions between LASSO, Ridge, Elastic Net and Bayesian GLM methods. Each model will be trained at first by using data from the regular season of that tournament's year. Afterwards, each game in that tournament will be predicted by using the average seasonal performance of both teams. Since for every tournament we will already know the starting 32 games and all seeds in every region, we can predict each game's result from the second round and use our model to progressively fill in the whole tournament bracket, we then evaluate our model's performance by seeing how it matches the true events.
 
 We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
@@ -72,16 +73,6 @@ We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
 \end{array} 
 \right. \]\
 $X_{ab}$ is a matrix of all 32 relevant statistics for teams a and b, with each row indicating one game in the regular season of the year in question. Finally, $\beta$ is a vector of the corresponding coefficients for each column of $X_{ab}$.\ One of the main differences between each model will stem from the way they perform variable selection, affecting the size of $X_{ab}$.
-
-\subsection{Data Setup / Manipulation}
-
-Even though we avoided issues of missing or messy data by using data provided by Kaggle, there was still alot of manipulation to do in order to get the data in appropriate form for our needs. Our most important function is the one that predicts the tournament bracket. This function starts out predicting the first 32 games of the first round, then it progressively predicts each subsequent round, making sure each game has the correct teams (E.g The winner between seed 1 and seed 16 of region W must play the winner between seeds 8 and 9 of the same region). To do so we needed to ensure each touranment seed was associated with their correct seed and that the games were ordered correctly (NOTE: Due to the varying nature of how the preliminary First Four round is constructed, we just take its winners as given).
-
-Another issue we encountered was that the data was structured in such a way that the statistics recorded per game were categorized for winning team and losing team. The problem arises in that when we create the binary response variable Y, all the values would be by default 1 and this would be problematic when we build our models. Thus, we had to create functions that removed the winning and losing labels to the more generic "a", "b" and then exchange the columns in the data frame so the winning team could be either the first or second input.
-
-Once our model is completed, the inputs for each team will be the regular season averages for both teams so we needed a function to extract and compute this information.
-
-The details of these functions and edits can be checked on our BitBucket repository at $https://lrs36@bitbucket.org/ml339/final-project.git$.
 
 \subsection{Coefficient Analysis: LASSO}
 
