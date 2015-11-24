@@ -48,7 +48,7 @@
 \maketitle
 
 \begin{abstract}
-This article is a proposal with preliminary ideas and plans for our final project. We choose a data set of NCAA basketball and hope to predict the champion of the 2015 NCAA tournament. We have come up with some motivation questions about selecting variables and considering time effect. According to the details of the data set and what we have learned from the course, we plan to use regression with bayesian approaches and do classification or clustering to achieve our goal.
+This project attempts to choose the best type of logistic regression model to predict the results of the 2012-2015 NCAA tournaments using detailed regular season data for all the teams in the association.
 \end{abstract}
 
 \section{Introduction}
@@ -61,7 +61,7 @@ Using the data described above we will build several models that will attempt to
 
 Since predicting tournament brackets is still a huge conundrum and even now betting sites and competitions never look exactly for "perfect" brackets, we also did not want to assess our predictions solely on this measure. As a result, we are going to divide our predictions into different levels of accuracy where we see how our model performs in predicting the entire bracket, the Final Four (Regional champions) and the National champion.
 
-\section{Data Cleaning/Manipulation}
+\section{Data Cleaning / Manipulation}
 
 Even though we avoid issues of missing or messy data by using data provided by Kaggle, there was still alot of manipulation to do in order to get the data in appropriate form for our needs. Our most important function is the one that predicts the tournament bracket. This function starts out predicting the first 32 games of the first round, then it progressively predicts each subsequent round, making sure each game has the correct teams (E.g The winner between seed 1 and seed 16 of region W must play the winner between seeds 8 and 9 of the same region). To do so we needed to ensure each touranment seed was associated with their correct seed and that the games were ordered correctly (NOTE: Due to the varying nature of the preliminary First Four round, we just take its winners as given).
 
@@ -69,54 +69,7 @@ Another issue we encountered was that the data was structured in such a way that
 
 Once our model is completed, the inputs for each team will be the regular season averages for both teams so we needed a function to extract and compute this information.
 
-The details of these functions and edits can be checked on the appendix.
-
-\section{Motivating Questions}
-
-\subsection{Question 1}
-
-Teams in the NCAA change rosters very quickly which means that historical data of past seasons/tournaments has diminishing returns. For example, how useful will be the results of a season that happened 12 years ago in predicting this year's results when all the teams players (possibly coaches) may be completely different. Therefore, we want to know how useful and to what extent should we use historical data in our analysis.
-
-
-\subsection{Question 2}
-
-Another question is how useful are each individual game metric to our model? Are number of overtimes in a game really significant for our predictions? One way we might want to tune our model is by using backwards-step methods to identify the best model to use.
-
-
-
-\subsection{Question 3}
-
-As we use the model to predict the historical results of tournament in 2015 and test how well our model performs, we also want to know whether this model can potentially predict results of tournament in 2016. If the model we build is robust and works for future prediction, once regular season results in 2016 comes out in future, we are interested to know whether the prediction will still be valid, or whether we need to revise our model to adjust for any variability in the data.
-
-
-%% \subsection{Keywords for paper submission}
-%% Your NIPS paper can be submitted with any of the following keywords (more than one keyword is possible for each paper):
-  
-  %% \begin{verbatim}
-%% Bioinformatics
-%% Biological Vision
-%% Brain Imaging and Brain Computer Interfacing
-%% Clustering
-%% Cognitive Science
-%% Control and Reinforcement Learning
-%% Dimensionality Reduction and Manifolds
-%% Feature Selection
-%% Gaussian Processes
-%% Graphical Models
-%% Hardware Technologies
-%% Kernels
-%% Learning Theory
-%% Machine Vision
-%% Margins and Boosting
-%% Neural Networks
-%% Neuroscience
-%% Other Algorithms and Architectures
-%% Other Applications
-%% Semi-supervised Learning
-%% Speech and Signal Processing
-%% Text and Language Applications
-
-%% \end{verbatim}
+The details of these functions and edits can be checked on our BitBucket repository at $https://lrs36@bitbucket.org/ml339/final-project.git$.
 
 \section{Methods}
 \label{gen_inst}
@@ -125,18 +78,15 @@ Our model is going to predict the all the games in multiple editions of the NCAA
 
 While we worked on this project we realized that it would be extremely unlikely to predict every single game correctly so we changed our focus to predict at different levels of accuracy. This means that in addition to predicting the whole bracket, we also assess our models' performances based on how they predicted each round of the tournament from the First Round to the National Championship final.
 
-
-
-
 \subsection{Model Analysis}
 
 We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
 \[ Y_{ab} = \left\{
-  \begin{array}{ll}
-  1 & Team \ a \ wins \\
-  0 &  Team \ b \ wins \\
-  \end{array} 
-  \right. \]\
+\begin{array}{ll}
+1 & Team \ a \ wins \\
+0 &  Team \ b \ wins \\
+\end{array} 
+\right. \]\
 Meanwhile X is a matrix of all 32 relevant statistics for teams a and b, with each row indicating one game in the regular season of the year in question. Finally, $\beta$ is also a vector of the corresponding cofficients for each column of X.\
 
 Now we can run this model with LASSO regression and (10-fold) cross-validation to obtain the most significant covariates and start checking the predictions.\
@@ -154,28 +104,41 @@ In this step we apply stepwise method to select significant coefficients using r
 
 In the Bayesian GLM stage, each posterior coefficient has an estimated value. However, after applying stepwise method, number of the most important coefficients results in only six, less than that from LASSO regression. It turns out that three pointers made, field goals made, free throw attempted, free throws made are the most essential winning features for a team as the coefficients values are quite large. Interestingly the results that final scores of both teams are not significant which is consistent with the results from LASSO. Similary in the stepwise analysis, free throws made are significant, which also agrees with the LASSO results.
 
+\section{Results / Predictions}
 
+The results we obtained from our various models are split across Tables 2-5 in the Appendix categorized by each year from 2012-2015, with the prediction rate for each model (i.e the percentage of total games correctly predicted) at each round listed. We note that each percentage must be viewed with careful consideration. For example, a low value in the Final Four does not immediately imply a bad predicted bracket since the number of winners to be predicted (4) is much less than in the second round (32) so this does not mean our predictions for the subsequent rounds are without value.
 
+\subsection{Second Round: 32 games}
 
+Throughout the four tournament editions, our models' predictions for this round were the highest of them all, but this is unsurprising since the predictions of the following rounds depend heavily on whether the prediction made are correct or not (E.g Predicting two consecutive games unsuccessfully, automatically makes the prediction for the game between those "incorrect" winners wrong). However, the we stil get respectable ranges of 0.6 to about 0.9 accuracy. The results for each model are also notably consistent. We can rank our models from worst to best in the following order: LASSO $<$ Elastic Net $<$ Bayes GLM $<$ Ridge.
 
+\subsection{Third Round: 16 games}
 
+The Third round is overall proved to be a much harder round to predict. Almost all of our models have rates between 0.25 to 0.4, with only the Ridge model managing to predict at best half of the games correctly. Here we can see first-hand the difficulties our models encounter when upsets are not considered to a large extent. Even one or two upsets can go on to shatter future predictions. Even so we can still rank our models' perofrmance: Bayes GLM $<$ Lasso $<$ Elastic Net $<$ Ridge.
 
+\subsection{Sweet Sixteen: 8 games}
 
-\section{Predictions}
+This round has very similar prediction rate values than the one before in all four tournaments, but since the number of games is halved, this unfortunately means the overall predictions are worse. However, this again does not come as a surprise because at this stage of the brackets the seeds of the teams start to lose some of their meaning as usually most of the srongest remain so the skills start to converge so that clear favourites are less apparent. The model ranks are also similar to before: Lasso $<$ Bayes GLM $<$ Elastic Net $<$ Ridge.   
 
-\subsection{Model 1: Logistic Regression with Lasso}
+\subsection{Elite Eight: 4 games}
 
-\subsection{Model 2: Logistic Regression with Ridge}
+At a close glance, the most common rate in this round is 0.25. On one hand, we can take some confidence in that our model can regularly predict some true results at this deep stage of the tournament. On the other hand, only predicting one winner drastically lowers the chances of getting decent rates for the final two rounds. That being said, the Ridge model did manage to get 0.5 and 0.75 rates in 2012 and 2015 respectively. This were our best estimates and a great example of how a bracket can still be "fixed" even if many games were mispredicted. In these particular cases, most of the No.1 seeds from each region made it to the Final Four. Since, our model naturally favours those teams with better seasonal performances (the teams that become the strongest seeds), these predictions are not anomalies. Model ranks: Lasso  $<$ Elastic Net $<$ Bayes GLM $<$ Ridge.  
 
-\subsection{Model 3: Bayesian Generalized Linear Model with Stepwise}
+\subsection{Semi-Finals: 2 games}
 
-Below are the results of our predictions for the last 4 NCAA tournaments:\
+Only on 2012 do we get a 0.5 rate for all models (1 game) while the rest of the years we get 0s. Again, this isn't a failure but rather points out to where improvements can be made to our model. At this point of the tournament, we have the four strongest teams of the conference and only very rarely will most of them be unexpected upset teams but rather equally skilled colleges and our model will have a hard time predicting the winner when the margins between teams are not very significant. Model Ranks: Lasso  $<$ Elastic Net $<$ Ridge $<$ Bayes GLM.  
 
+\subsection{Championship Final: 1 game}
 
+Given that the previous round has almost always has incredibly low prediction rates, determining the champion will be very unlikely. In fact, none of our models could do it yet we can't say our models have failed to be useful. Model Ranks: NA
 
+\subsection{Best Model}
 
+All four models analyzed appear to have different levels of precision per round of the tournament. LASSO and Elastic Net have quite similar performances while the Bayes GLM has the most variability, predicting very poorly in some rounds but then obtaining surprising results in others. Yet as we look at the prediction rates of the tournaments we used, the logistic Ridge regression model was constantly one of the better predictors at every stage. Multiple reasons might explain this: The Ridge penalty could be the best tuning parameter for our data. Unlike the other models which ignore many contents of the data, the Ridge model uses all the covariates provided. Not only will the fit be better, but the statistics such as team scores, blocks and steals made that intuitively should affect game outcomes are taken into consideration for the predictions.
 
-\subsection{Account for Team Specifics and Upsets}
+Our best bracket was for the 2015 tournament (our initial main goal to predict) using Ridge regression and can be seen in Figure 1 of the appendix. We can attribute this result to the fact that the latter rounds did not experience alot of upsets and most of the No.1 seeds made it to the Final Four. These situations benefit our model specifications greatly as we most value the teams with the highest consistency all year long.
+
+\section{Model Improvements: Account for Team Specifics and Upsets}
 
 To account for team specifics and upsets that our model has not explained, we examine the history of every paired teams in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since most of times two teams in different regions did not play against each other in regular seasons, out of 67 games, only 19 games have happened in the regular seasons during the past 12 years. For every paired game in the bracket, we use the following formula to compute proportion of strong seed A beat weak seed B conditional on occurences when strong seed A and weak seed B played in the past:
 
@@ -193,11 +156,11 @@ Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more o
 \begin{table}[ht]
 \centering
 \begin{tabular}{rrrrrrrrr}
-  \hline
- & W & W3L1 & W1L2 & W1L1 & L & Correct & Games played & Correct proportion \\ 
-  \hline
+\hline
+& W & W3L1 & W1L2 & W1L1 & L & Correct & Games played & Correct proportion \\ 
+\hline
 1 & 9.00 & 1.00 & 1.00 & 2.00 & 6.00 & 14.00 & 19.00 & 0.74 \\ 
-   \hline
+\hline
 \end{tabular}
 
 \caption{W: Strong seed A always beat weak seed B; W3L1: Strong seed A won three times as it was beat by weak seed B; W1L2: Strong seed A was beat by weak seed B as twice as it beat weak seed B; W1L1: Strong seed A won as many times as it was beat by weak seed B; Correct: Historical results consistent with actual tournament results; Games played: number of games played; Correct Proportion: Proportion that historical results are consistent with actual tournament results}
