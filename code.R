@@ -190,7 +190,7 @@ predicting = function(year){
   secondround = NULL
   for (i in 1:length(seed)){
     if(seed[i] %in% secondRound$wSeed){
-      secondround = c(secondRound,secondRound[which(secondRound$wSeed == seed[i]),]$wteam)
+      secondround = c(secondround,secondRound[which(secondRound$wSeed == seed[i]),]$wteam)
     }
     else if(seed[i]  %in% secondRound$lSeed){
       secondround = c(secondround,secondRound[which(secondRound$lSeed == seed[i]),]$lteam)
