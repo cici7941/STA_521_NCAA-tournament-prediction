@@ -70,6 +70,10 @@ We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
 \right. \]\
 $X_{ab}$ is a matrix of all 32 relevant statistics for teams a and b, with each row indicating one game in the regular season of the year in question. Finally, $\beta$ is a vector of the corresponding coefficients for each column of $X_{ab}$.\ One of the main differences between each model will stem from the way they perform variable selection, affecting the size of $X_{ab}$.
 
+An early challenge we faced was to figure out what amount of regular season data we use to train our models. At first it seems that more data can always help, especially from an immediately previous season, to describe average team capabilities.  However, we can also argue that it doesn't make sense to use data from seasons too far back from the tournament we want to predict since there is a huge turnover in players and strategies, even if coaches and philosophies remain.
+
+To answer this issue, we ran each model for predicting the 2015 tourney with data from the 2015, 2014 and 2013 seasons. The resulting plots can be seen in Figure 1 of the Appendix. Across all four models there is clear improvement in prediction rates per round when 2-year data is used but not 3-year data. Notably, the LASSO and Elastic Net models benefit the most of more regular season game information. Thus, from our prediction models will always be trained with data from the past 2 seasons of that tournament's year.
+
 \subsection{Coefficient Analysis: LASSO}
 
 Checking the non-zero coefficients after running the LASSO, we can see some surprising results. 
