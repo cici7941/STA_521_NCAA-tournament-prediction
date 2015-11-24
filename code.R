@@ -343,5 +343,4 @@ output=matrix(c(nrow(win_all),length(win3_lose1)-1,
                 nrow(lose_all), count, nrow(history),RightProb),nrow =1,ncol=8)
 colnames(output)=c("W", "W1L1", "W1L2", "W1L1","L","Count of corrected results",
                    "Number of games played","Correct probability")
-reference=data.frame("W:Strong seed A always beat weak seed B ","W3L1: Strong seed A won three times as it was beat by weak seed B")
 
