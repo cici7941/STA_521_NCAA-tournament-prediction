@@ -14,25 +14,21 @@
   Leonardo Shu\\
   Department of Statistics\\
   Duke University\\
-  Durham, NC \\
   \texttt{leonardo.shu@duke.edu} \\
   \And
   Mengrun Li \\
   Department of Statistics\\
   Duke University\\
-  Durham, NC \\
   \texttt{mengrun.li@duke.edu} \\
   \AND
   Yaqian Cheng \\
   Department of Statistics\\
   Duke University\\
-  Durham, NC \\
   \texttt{yaqian.cheng@duke.edu} \\
   \And
   Wei (Emily) Shao \\
   Department of Statistics\\
   Duke University\\
-  Durham, NC \\
   \texttt{wei.shao@duke.edu} \\
 }
 
@@ -53,11 +49,11 @@ This project attempts to choose the best type of logistic regression model to pr
 
 \section{Introduction}
 
-The goal of our team final project is to predict the results of the various NCAA tournaments with a variety of models and compare the results between them to figure out which one, if any, works best. This is quite a popular excercise done every year during March Madness but there is still alot of debate as to the best method of prediction apart from blind guessing and being biased for one's favourite team. Some papers have been written about this sort of problem, most notably by Prof.....
+The goal of our team final project is to predict the results of the various NCAA tournaments with a variety of models and compare the results to figure out which one, if any, works best. This is quite a popular excercise done every year during March Madness but there is still a lot of debate as to the best method of prediction apart from blind guessing and being biased for one's favourite team. A few papers have been written about this sort of problem. In \textit{Bracketology: How can math help?}[1], the authors predict brackets by calculating ratings of each team using linear systems of equations.
 
 The data sets we will be using are provided by a past competition on Kaggle.com, which ensures that we are using information which is both reliable and rich enough for our project goals. The data sets have detailed information on past NCAA regular seasons, tournaments, along with seeds and ID's for each team to facilitate prediction match-ups. Specifically, there are more than 5000 pieces of game data for each year, including 34 columns of relevant game statstics for each playing team such as field goals made, number of blocks, number of steals and number of assists, which will be essential for us to measure a team's performance.
 
-Since we already know the resulting "true" brackets of past tournaments, we can easily rate how our predictions did with a complete set of results. However, since the odds of predicting a bracket is theoretically 1 in 9.2 quintillion (http://www.businessinsider.com/odds-of-perfect-ncaa-bracket-2015-3) and even betting sites or fan competitions never exactly search for "perfect" brackets, we also did not want to assess our predictions solely on perfection. As a result, we are going to divide our predictions into different levels of accuracy where we see how our model performs in predicting each round of the tournament, from the Second Round (post First Four) to the Championship game.
+Since we already know the resulting "true" brackets of past tournaments, we can easily rate how our predictions did with a complete set of results. However, since the odds of predicting a bracket is theoretically 1 in 9.2 quintillion[3] and even betting sites or fan competitions never exactly search for "perfect" brackets, we also did not want to assess our predictions solely on perfection. As a result, we are going to divide our predictions into different levels of accuracy where we see how our model performs in predicting each round of the tournament, from the Second Round (post First Four) to the Championship game.
 
 \section{Methodology}
 \label{gen_inst}
@@ -123,16 +119,15 @@ Our best bracket was for the 2015 tournament (our initial main goal to predict) 
 
 \section{Model Improvements: Account for Upsets}
 
-To account for upsets that our model has not explained, we examine the history of every paired teams in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since most of times two teams in different regions did not play against each other in regular seasons, out of 67 games, only 19 games have happened in the regular seasons during the past 12 years. For every paired game in the bracket, we use the following formula to compute proportion of strong seed A beat weak seed B conditional on only games of strong seed A played against weak seed B in the past:
+To account for upsets that our model has not explained, we examine the history of every paired game in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since in tournament most of times two teams from different regions did not play against each other in regular seasons, out of 67 games, only 19 games have happened in the regular seasons during the past 12 years. For every paired game in the bracket, we use the following formula to compute proportion of strong seed A beat weak seed B conditional on only games of strong seed A played against weak seed B in the past:
 
 $P=\frac{Number \ of \ times \ strong \ seed \ A \ won \ - \ Number \ of \ times \ weak \ seed \ B \ won}{Number \ of \ times \ strong \ seed \ A \ played \ against \ weak \ seed \ B }$
 
 
-The results are shown in the table below. in 14 out of 19 games historical records indicate consistency with actual tournament results. One of the historical records somewhat explains an upset in our model prediction when the data shows Villanova were beat by NC State in 2008 which is consistent with the actual tournament results, while our model predicts Villanova to win and show up in the final four. 
+The results are shown in the table below. In 14 out of 19 games historical records indicate consistency with actual tournament results. One of the historical records somewhat explains an upset in our model prediction when the data shows Villanova were beat by NC State in 2008 which is consistent with the actual tournament results, while our model predicts Villanova to win and show up in the final four. 
 
-This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would investigate the regular season information to determine whether strong seed A will beat weak seed B. However, since past information does not always inform future, we could possibily assign weights to teams in our regression model to adjust for possibility of an upset that may happen. 
+This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams to play in the bracket, we would investigate the regular season information to determine whether strong seed A will beat weak seed B. However, since past information does not always inform future, we could possibily assign weights to teams in our regression model to consider possibility of an upset that may happen. 
 
-Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more on team specifics to predict brackets as an example is that scores team A beats B by is related to ratings of Team A and Team B. This also inspires us to revise our model in the future. 
 
 % latex table generated in R 3.2.2 by xtable 1.8-0 package
 % Mon Nov 23 16:47:50 2015
@@ -336,8 +331,12 @@ Second Round & 0.84 & 0.84 & 0.84 & 0.84 \\
 
 
 \section{References $\&$ Data Links}
-http://mathaware.org/mam/2010/essays/ChartierBracketology.pdf
+[1]http://mathaware.org/mam/2010/essays/ChartierBracketology.pdf
 
-https://www.kaggle.com/c/march-machine-learning-mania-2015
+[2]http://www.businessinsider.com/odds-of-perfect-ncaa-bracket-2015-3
+
+[3]https://www.kaggle.com/c/march-machine-learning-mania-2015
+
+
 
 \end{document}
