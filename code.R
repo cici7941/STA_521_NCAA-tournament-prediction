@@ -186,6 +186,7 @@ predicting = function(year){
   #set the seed in the order
   seed = paste0(rep(c("W","X","Y","Z"), each = 16),
                 c("01",16,"08","09","05",12,"04",13,"06",11,"03",14,"07",10,"02",15))
+  ##match the teamid with team seeds in the order of the games
   firstround = NULL
   for (i in 1:length(seed)){
     if(seed[i] %in% firstRound$wSeed){
@@ -196,11 +197,14 @@ predicting = function(year){
     }
   }
   #input: firstround teamid, regular season data, seed order, model
+  #output: the winner of the firstround
   firstround.winners = function(firstround, data,seed,model){
+    #give each team the opponent 
     id = matrix(firstround,ncol = 2, byrow = TRUE)
     seed = matrix(seed, ncol = 2, byrow = TRUE)
     win = 0; game = 0
     seedWinner = 0
+    #do the prediction of each game
     for(i in 1:nrow(id)){
       game = average(data, id[i,1],id[i,2])
       game=t(game)
@@ -208,6 +212,7 @@ predicting = function(year){
         game=as.data.frame(game)
       }
       win[i] = predict(model, game, type = "response")
+      #set the first team as winner if the prediction probability is larger than 0.5
       if(win[i] >= 0.5){
         win[i] = id[i,1]
         seedWinner[i] = seed[i,1]
@@ -219,12 +224,20 @@ predicting = function(year){
     winner = data.frame(wSeed = seedWinner, wteam = win)
     return(winner)
   }
+###Other rounds' results
+  #input: the teamid of last round winners , regular season data,  model
+  #output: the winner of other rounds until 1/4 final round
   nextround.winners = function(lastwinner, data, model){
     seed = matrix(as.matrix(lastwinner)[,1])
     id = matrix(as.matrix(lastwinner)[,2])
     win = 0; game = 0
     seedWinner = 0
+    #generate a sequence of nrow(id)/2 even numbers
+    #which is used to represent how many games are in this round
     k = seq(2,nrow(id),2)
+    #predict the winner of each game
+    #since all the winners of last round are in one column, so use k generated before
+    #to make every two teams play against each other
     for(i in k){
       game = average(data, id[i-1,1],id[i,1])
       game=t(game)
@@ -232,6 +245,7 @@ predicting = function(year){
         game=as.data.frame(game)
       }
       win[i/2] = predict(model, game, type = "response")
+      #set the first team as winner if the prediction probability is larger than 0.5
       if(win[i/2] >= 0.5){
         win[i/2] = id[i-1,1]
         seedWinner[i/2] = seed[i-1,1]
