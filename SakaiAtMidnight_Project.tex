@@ -59,7 +59,8 @@ Since we already know the resulting "true" brackets of past tournaments, we can 
 \label{gen_inst}
 
 \subsection{Model Setup / Data Manipulation}
-All of our four models are going to be a variation of logistic regression. We are going to compare the predictions between LASSO, Ridge, Elastic Net and Bayesian GLM methods. Each model will be trained at first by using data from the regular season of that tournament's year. Afterwards, each game in that tournament will be predicted by using the average seasonal performance of both teams. Since for every tournament we will already know the starting 32 games and all seeds in every region, we can predict each game's result from the second round and use our model to progressively fill in the whole tournament bracket, we then evaluate our model's performance by seeing how it matches the true events.
+All of our four models are going to be a variation of logistic regression. We are going to compare the predictions between LASSO, Ridge, Elastic Net and Bayesian GLM methods. In Bayesian GLM methods, we need to use Bayesian GLM stepwise to select significant coefficients. The Bayesian model assumes an independent normal prior for each coefficient and performs MCMC algorithm to search for posterior of each coeffiecient. Then we select the most significant coefficients calculated by Bayesian GLM using stepwise method from both directions.\
+Each model will be trained at first by using data from the regular season of that tournament's year. Afterwards, each game in that tournament will be predicted by using the average seasonal performance of both teams. Since for every tournament we will already know the starting 32 games and all seeds in every region, we can predict each game's result from the second round and use our model to progressively fill in the whole tournament bracket, we then evaluate our model's performance by seeing how it matches the true events.
 
 We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
 \[ Y_{ab} = \left\{
@@ -68,26 +69,17 @@ We start out with our full logistic model $Y_{ab} = X_{ab}^T \beta$ where:\
 0 &  Team \ b \ wins \\
 \end{array} 
 \right. \]\
-$X_{ab}$ is a matrix of all 32 relevant statistics for teams a and b, with each row indicating one game in the regular season of the year in question. Finally, $\beta$ is a vector of the corresponding coefficients for each column of $X_{ab}$.\ One of the main differences between each model will stem from the way they perform variable selection, affecting the size of $X_{ab}$.
+$X_{ab}$ is a matrix of all 32 relevant statistics for teams a and b, with each row indicating one game in the regular season of the year in question. Finally, $\beta$ is a vector of the corresponding coefficients for each column of $X_{ab}$.\ One of the main differences between each model will stem from the way they perform variable selection, affecting the size of $X_{ab}$.\\
 
 An early challenge we faced was to figure out what amount of regular season data we use to train our models. At first it seems that more data can always help, especially from an immediately previous season, to describe average team capabilities.  However, we can also argue that it doesn't make sense to use data from seasons too far back from the tournament we want to predict since there is a huge turnover in players and strategies, even if coaches and philosophies remain.
 
 To answer this issue, we ran each model for predicting the 2015 tourney with data from the 2015, 2014 and 2013 seasons. The resulting plots can be seen in Figure 1 of the Appendix. Across all four models there is clear improvement in prediction rates per round when 2-year data is used but not 3-year data. Notably, the LASSO and Elastic Net models benefit the most of more regular season game information. Thus, from our prediction models will always be trained with data from the past 2 seasons of that tournament's year.
 
-\subsection{Coefficient Analysis: LASSO}
+\subsection{Coefficient Analysis}
 
-Checking the non-zero coefficients after running the LASSO, we can see some surprising results. 
-First of all, the coefficients for each team are either significant or not in pairs. Which means that there is no case where assists for team a are important but assists for team b are not. Second, the final scores for each team at the end of each game are not relevant enough to be used which is quite unintuitive since these numbers logically determine the winner of the game but on at least we don not have to worry now that such a statistic would cause overfitting issues to our model. Conversely, we note that number of overtimes in a game does in fact influence our model, it's a small, negative effect, but significant nonetheless given that our prior assumptions would say otherwise. \
+In our four models, LASSO, Elastic Net and Bayes GLM can do covariates selection. Checking the non-zero coefficients of the results, we can see some surprising results. First of all, the coefficients for each team are either significant or not in pairs. Which means that there is no case where assists for team a are important but assists for team b are not. Second, the final scores for each team at the end of each game are not relevant enough to be used which is quite unintuitive since these numbers logically determine the winner of the game. But with this result, we do not have to worry that such a statistic would cause overfitting issues to our model.\
 
-Other interesting features from this model selection include the idea that field goals or 3-pointers attempted are not significant, only the ones that are actually made are important. This is important since this means that no tying harder to shoot does not imply a better chance at winning if the shots do not go in. However, this doesn't apply to free-throws since both those that are made and attempted are significant but this could be because free-throws are closely connected to fouls made which is another statistic of our data which is also impactful. Moreover, defensive rebounds are significant unlike their offensive counterparts while the coefficients for turnovers, steals and blocks are pushed to 0 which again is something noteworthy since they usually have a lot of attention in regular game analysis.\
-
-\subsection{Coefficient Analysis: Bayes GLM}
-
-Bayesian GLM Stepwise:
-
-In this step we apply stepwise method to select significant coefficients using results from running Bayesian Generalized Linear Model. The Bayesian model assumes an independent normal prior for each coefficient and performs MCMC algorithm to search for posterior of each coeffiecient. Then we select the most significant coefficients calculated by Bayesian GLM using stepwise method from both directions.
-
-In the Bayesian GLM stage, each posterior coefficient has an estimated value. However, after applying stepwise method, number of the most important coefficients results in only six, less than that from LASSO regression. It turns out that three pointers made, field goals made, free throws made are the most essential winning features for a team as the coefficients values are quite large. Interestingly the results that final scores of both teams are not significant which is consistent with the results from LASSO. Similarly in the stepwise analysis, free throws made are significant, which also agrees with the LASSO results.
+Although the covariates selection may be slightly different when we add data of previous years, in general, they choose almost the same predictors. The coefficients of different predictors selected with different years data are very insignificant. That means they do not contribute too much to our model.\
 
 \section{Results / Predictions}
 
