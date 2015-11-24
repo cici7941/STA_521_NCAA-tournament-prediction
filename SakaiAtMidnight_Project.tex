@@ -96,9 +96,9 @@ Other interesting features from this model selection include the idea that field
 
 Bayesian GLM Stepwise:
 
-In this step we apply stepwise method to select significant coefficients using results from running Bayesian Generalized Linear Model. The Bayesian model assumes an independent normal prior for each coefficient and performs MCMC algorithm to search for posterior of each coeffiecient. Then we select the most significant coefficients calculated by Bayesian GLM using stepwise method with both directions.
+In this step we apply stepwise method to select significant coefficients using results from running Bayesian Generalized Linear Model. The Bayesian model assumes an independent normal prior for each coefficient and performs MCMC algorithm to search for posterior of each coeffiecient. Then we select the most significant coefficients calculated by Bayesian GLM using stepwise method from both directions.
 
-In the Bayesian GLM stage, each posterior coefficient has an estimated value. However, after applying stepwise method, number of the most important coefficients results in only six, less than that from LASSO regression. It turns out that three pointers made, field goals made, free throw attempted, free throws made are the most essential winning features for a team as the coefficients values are quite large. Interestingly the results that final scores of both teams are not significant which is consistent with the results from LASSO. Similary in the stepwise analysis, free throws made are significant, which also agrees with the LASSO results.
+In the Bayesian GLM stage, each posterior coefficient has an estimated value. However, after applying stepwise method, number of the most important coefficients results in only six, less than that from LASSO regression. It turns out that three pointers made, field goals made, free throws made are the most essential winning features for a team as the coefficients values are quite large. Interestingly the results that final scores of both teams are not significant which is consistent with the results from LASSO. Similarly in the stepwise analysis, free throws made are significant, which also agrees with the LASSO results.
 
 \section{Results / Predictions}
 
@@ -134,18 +134,18 @@ All four models analyzed appear to have different levels of precision per round 
 
 Our best bracket was for the 2015 tournament (our initial main goal to predict) using Ridge regression and can be seen in Figure 1 of the appendix. We can attribute this result to the fact that the latter rounds did not experience alot of upsets and most of the No.1 seeds made it to the Final Four. These situations benefit our model specifications greatly as we most value the teams with the highest consistency all year long.
 
-\section{Model Improvements: Account for Team Specifics and Upsets}
+\section{Model Improvements: Account for Upsets}
 
-To account for team specifics and upsets that our model has not explained, we examine the history of every paired teams in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since most of times two teams in different regions did not play against each other in regular seasons, out of 67 games, only 19 games have happened in the regular seasons during the past 12 years. For every paired game in the bracket, we use the following formula to compute proportion of strong seed A beat weak seed B conditional on occurences when strong seed A and weak seed B played in the past:
+To account for upsets that our model has not explained, we examine the history of every paired teams in the 2015 bracket and record the information whether they have played in regular seasons between 2003 and 2014. Since most of times two teams in different regions did not play against each other in regular seasons, out of 67 games, only 19 games have happened in the regular seasons during the past 12 years. For every paired game in the bracket, we use the following formula to compute proportion of strong seed A beat weak seed B conditional on only games of strong seed A played against weak seed B in the past:
 
-$P=\frac{Number \ of \ times \ strong \ seed \ A \ won \ - \ Number \ of \ times \ weak \ seed \ B \ won}{Number \ of \ times \ strong \ seed \ A \ met \ weak \ seed \ B }$
+$P=\frac{Number \ of \ times \ strong \ seed \ A \ won \ - \ Number \ of \ times \ weak \ seed \ B \ won}{Number \ of \ times \ strong \ seed \ A \ played \ against \ weak \ seed \ B }$
 
 
-The results are shown in the table below. 14 out of 19 times historical records indicates consistency with actual tournament results. The historical result somewhat explains an upset in our model prediction when the historical data shows Villanova were beat by NC State in 2008 which is consistent with the actual tournament results, while our model predicts Villanova to win and show up in the final four. 
+The results are shown in the table below. in 14 out of 19 games historical records indicate consistency with actual tournament results. One of the historical records somewhat explains an upset in our model prediction when the data shows Villanova were beat by NC State in 2008 which is consistent with the actual tournament results, while our model predicts Villanova to win and show up in the final four. 
 
-This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would look into the regular season information to determine whether strong seed A will beat weak seed B. However, since the past information does not always inform the future, we could possibily assign weights to teams in our regression model to adjust for the possibility of an upset that may happen. 
+This further suggests that if we want to incorporate team specifics into our model to make our model more accurate, in each step after we apply the model to select two teams that will play in the bracket, we would investigate the regular season information to determine whether strong seed A will beat weak seed B. However, since past information does not always inform future, we could possibily assign weights to teams in our regression model to adjust for possibility of an upset that may happen. 
 
-Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more on team specifics to predict brackets as an example is that scores team A beats B by is related to ratings of Team A and Team B. This leaves us more inspirations to revise our model in the future. 
+Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more on team specifics to predict brackets as an example is that scores team A beats B by is related to ratings of Team A and Team B. This also inspires us to revise our model in the future. 
 
 % latex table generated in R 3.2.2 by xtable 1.8-0 package
 % Mon Nov 23 16:47:50 2015
@@ -155,11 +155,11 @@ Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more o
 \hline
 & W & W3L1 & W1L2 & W1L1 & L & Correct & Games played & Correct proportion \\ 
 \hline
-1 & 9.00 & 1.00 & 1.00 & 2.00 & 6.00 & 14.00 & 19.00 & 0.74 \\ 
+& 9.00 & 1.00 & 1.00 & 2.00 & 6.00 & 14.00 & 19.00 & 0.74 \\ 
 \hline
 \end{tabular}
 
-\caption{W: Strong seed A always beat weak seed B; W3L1: Strong seed A won three times as it was beat by weak seed B; W1L2: Strong seed A was beat by weak seed B as twice as it beat weak seed B; W1L1: Strong seed A won as many times as it was beat by weak seed B; Correct: Historical results consistent with actual tournament results; Games played: number of games played; Correct Proportion: Proportion that historical results are consistent with actual tournament results}
+\caption{W: number of times strong seed A always beat weak seed B; W3L1: number of times strong seed A won three times as it was beat by weak seed B; W1L2: number of times strong seed A was beat by weak seed B as twice as it beat weak seed B; W1L1: number of times strong seed A won as many times as it was beat by weak seed B; Correct: Historical results indicates consistency with actual tournament results; Games played: number of games played; Correct Proportion: proportion that historical results indicates consistency with actual tournament results}
 \end{table}
 
 \section{Appendix}
@@ -230,7 +230,7 @@ Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more o
    \hline
 \end{tabular}
 }
-\caption{notation meanings. "a." at front means team a; "b." at front means team b} 
+\caption{notation explanation. "a." at front means team a; "b." at front means team b} 
 \end{table}
 \begin{table}[H]
 \centering
