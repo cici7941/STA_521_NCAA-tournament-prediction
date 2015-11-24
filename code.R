@@ -47,14 +47,14 @@ predicting = function(year){
   # extract first four winners
   firstFourWinners = tourneyYearD[1:4,c("wSeed", "wteam")]
   firstFourWinners[,1] = str_replace(firstFourWinners$wSeed, "[a-b]", "")
-  # subset first round data
-  firstRound = tourneyYearD[5:36,]
-  firstRound$wSeed = str_replace(firstRound$wSeed, "[a-b]","")
-  firstRound$lSeed = str_replace(firstRound$lSeed, "[a-b]","")
-  # extract first round winners
-  firstRoundWinners = tourneyYearD[5:36,c("wSeed", "wteam")]
+  # subset second round data
+  secondRound = tourneyYearD[5:36,]
+  secondRound$wSeed = str_replace(secondRound$wSeed, "[a-b]","")
+  secondRound$lSeed = str_replace(secondRound$lSeed, "[a-b]","")
   # extract second round winners
-  secondRoundWinners = tourneyYearD[37:52,c("wSeed", "wteam")]
+  secondRoundWinners = tourneyYearD[5:36,c("wSeed", "wteam")]
+  # extract third round winners
+  thirdRoundWinners = tourneyYearD[37:52,c("wSeed", "wteam")]
   # extract sweet sixteen winning teams
   sweetSixteenWinners = tourneyYearD[53:60,c("wSeed", "wteam")]
   # extract elite eight winning teams
@@ -187,20 +187,20 @@ predicting = function(year){
   seed = paste0(rep(c("W","X","Y","Z"), each = 16),
                 c("01",16,"08","09","05",12,"04",13,"06",11,"03",14,"07",10,"02",15))
   ##match the teamid with team seeds in the order of the games
-  firstround = NULL
+  secondround = NULL
   for (i in 1:length(seed)){
-    if(seed[i] %in% firstRound$wSeed){
-      firstround = c(firstround,firstRound[which(firstRound$wSeed == seed[i]),]$wteam)
+    if(seed[i] %in% secondRound$wSeed){
+      secondround = c(secondRound,secondRound[which(secondRound$wSeed == seed[i]),]$wteam)
     }
-    else if(seed[i]  %in% firstRound$lSeed){
-      firstround = c(firstround,firstRound[which(firstRound$lSeed == seed[i]),]$lteam)
+    else if(seed[i]  %in% secondRound$lSeed){
+      secondround = c(secondround,secondRound[which(secondRound$lSeed == seed[i]),]$lteam)
     }
   }
-  #input: firstround teamid, regular season data, seed order, model
-  #output: the winner of the firstround
-  firstround.winners = function(firstround, data,seed,model){
+  #input: secondRound teamid, regular season data, seed order, model
+  #output: the winner of the secondRound
+  secondround.winners = function(secondround, data,seed,model){
     #give each team the opponent 
-    id = matrix(firstround,ncol = 2, byrow = TRUE)
+    id = matrix(secondround,ncol = 2, byrow = TRUE)
     seed = matrix(seed, ncol = 2, byrow = TRUE)
     win = 0; game = 0
     seedWinner = 0
@@ -258,11 +258,11 @@ predicting = function(year){
     return(winner)
   }
   predictRate = function(model){
-    firstRoundPredWinners = firstround.winners(as.character(firstround), regSeasonYearD,seed,model)
-    rate32 = sum(firstRoundPredWinners$wteam %in% firstRoundWinners$wteam)/32
-    secondRoundPredWinners = nextround.winners(firstRoundPredWinners,regSeasonYearD,model)
-    rate16 = sum(secondRoundPredWinners$wteam %in% secondRoundWinners$wteam)/16
-    sweetSixteenPredWinners = nextround.winners(secondRoundPredWinners,regSeasonYearD,model)
+    secondRoundPredWinners = secondround.winners(as.character(secondround), regSeasonYearD,seed,model)
+    rate32 = sum(secondRoundPredWinners$wteam %in% secondRoundWinners$wteam)/32
+    thirdRoundPredWinners = nextround.winners(secondRoundPredWinners,regSeasonYearD,model)
+    rate16 = sum(thirdRoundPredWinners$wteam %in% thirdRoundWinners$wteam)/16
+    sweetSixteenPredWinners = nextround.winners(thirdRoundPredWinners,regSeasonYearD,model)
     rate8 = sum(sweetSixteenPredWinners$wteam %in% sweetSixteenWinners$wteam)/8
     eliteEightPredWinners = nextround.winners(sweetSixteenPredWinners,regSeasonYearD,model)
     rate4 = sum(eliteEightPredWinners$wteam %in% eliteEightWinners$wteam)/4
@@ -271,7 +271,7 @@ predicting = function(year){
     PredChampion = nextround.winners(finalFourPredWinners,regSeasonYearD,model)
     rate1 = sum(PredChampion$wteam %in% champion$wteam)
     return(list(rate = c(rate32,rate16,rate8,rate4,rate2,rate1),
-                wteam = list(firstRoundPredWinners,secondRoundPredWinners,
+                wteam = list(secondRoundPredWinners,thirdRoundPredWinners,
                              sweetSixteenPredWinners,eliteEightPredWinners,
                              finalFourPredWinners,PredChampion)))
   }
