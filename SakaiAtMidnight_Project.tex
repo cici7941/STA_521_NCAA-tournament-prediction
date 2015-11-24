@@ -2,6 +2,8 @@
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{pdfpages}
+\usepackage{float}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
@@ -213,8 +215,125 @@ Tim Chartier, author of \textit{Bracketology: How can math help?} focuses more o
 \section{Model 3: Blasso}
 
 
+\section{Appendix}
+\begin{table}[H]
+\centering
+{\small
+\begin{tabular}{rrrrr}
+  \hline
+ & LASSO & Elastic Net & Ridge & Bayesglm \\ 
+  \hline
+(Intercept) & -0.0919 & -0.1435 & -0.0428 & -0.0919 \\ 
+  a.score & - & - & -0.0014 & - \\ 
+  b.score & - & - & -0.0110 & - \\ 
+  numot & - & -0.0008 & -0.0056 & - \\ 
+  a.fgm & 5.9195 & 9.2600 & 1.0068 & 5.9195 \\ 
+  a.fga & - & 0.2775 & 0.0156 & - \\ 
+  a.fgm3 & 1.7908 & 3.1775 & 0.5921 & 1.7908 \\ 
+  a.fga3 & - & -0.1161 & -0.1366 & - \\ 
+  a.ftm & 3.6959 & 5.5006 & 0.5817 & 3.6959 \\ 
+  a.fta & 0.1784 & 0.5965 & 0.3827 & - \\ 
+  a.or & - & -0.1796 & -0.0461 & - \\ 
+  a.dr & 0.0273 & 0.7291 & 0.7220 & - \\ 
+  a.ast & - & 0.0181 & 0.3555 & - \\ 
+  a.to & - & -0.5099 & -0.4308 & - \\ 
+  a.stl & - & 0.0195 & 0.1874 & - \\ 
+  a.blk & - & 0.0172 & 0.0990 & - \\ 
+  a.pf & -0.1051 & -0.1367 & -0.3395 & - \\ 
+  b.fgm & -5.8949 & -9.3580 & -1.0299 & -5.8949 \\ 
+  b.fga & - & - & -0.0136 & - \\ 
+  b.fgm3 & -1.7676 & -3.0506 & -0.5508 & -1.7676 \\ 
+  b.fga3 & - & -0.0359 & 0.0772 & - \\ 
+  b.ftm & -3.8222 & -5.7383 & -0.6001 & -3.8222 \\ 
+  b.fta & -0.0224 & -0.3500 & -0.3674 & - \\ 
+  b.or & 0.0148 & 0.1051 & 0.0478 & - \\ 
+  b.dr & -0.0124 & -0.8340 & -0.6992 & - \\ 
+  b.ast & -0.0477 & -0.1283 & -0.3750 & - \\ 
+  b.to & - & 0.5480 & 0.4326 & - \\ 
+  b.stl & - & -0.1112 & -0.2095 & - \\ 
+  b.blk & - & 0.0661 & -0.0765 & - \\ 
+  b.pf & 0.1021 & 0.1915 & 0.3470 & - \\ 
+   \hline
+\end{tabular}
+}
+\caption{coefficients estimates}\
+\end{table}
+\begin{table}[H]
+\centering
+{\small
+\begin{tabular}{rrrrr}
+  \hline
+ & LASSO & Elastic Net & Ridge & Bayesglm \\ 
+  \hline
+Second Round & 0.69 & 0.66 & 0.59 & 0.66 \\ 
+  Third Round & 0.31 & 0.44 & 0.31 & 0.31 \\ 
+  Sweet 16 & 0.25 & 0.38 & 0.38 & 0.25 \\ 
+  Elite 8 & 0.25 & 0.25 & 0.25 & 0.25 \\ 
+  Semi-Final & 0.50 & 0.50 & 0.50 & 0.50 \\ 
+  Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{prediction rate for each round in 2012}\ 
 
+\centering
+{\small
+\begin{tabular}{rrrrr}
+  \hline
+ & LASSO & Elastic Net & Ridge & Bayesglm \\ 
+  \hline
+Second Round & 0.72 & 0.62 & 0.56 & 0.69 \\ 
+  Third Round & 0.25 & 0.19 & 0.38 & 0.25 \\ 
+  Sweet 16 & 0.12 & 0.00 & 0.12 & 0.12 \\ 
+  Elite 8 & 0.25 & 0.00 & 0.25 & 0.25 \\ 
+  Semi-Final & 0.50 & 0.00 & 0.00 & 0.50 \\ 
+  Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{prediction rate for each round in 2013}\ 
 
+\centering
+{\small
+\begin{tabular}{rrrrr}
+  \hline
+ & LASSO & Elastic Net & Ridge & Bayesglm \\ 
+  \hline
+Second Round & 0.62 & 0.75 & 0.75 & 0.72 \\ 
+  Third Round & 0.31 & 0.31 & 0.31 & 0.19 \\ 
+  Sweet 16 & 0.25 & 0.38 & 0.25 & 0.25 \\ 
+  Elite 8 & 0.00 & 0.25 & 0.25 & 0.25 \\ 
+  Semi-Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+  Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{prediction rate for each round in 2014}\ 
+
+\centering
+{\small
+\begin{tabular}{rrrrr}
+  \hline
+ & LASSO & Elastic Net & Ridge & Bayesglm \\ 
+  \hline
+Second Round & 0.72 & 0.72 & 0.88 & 0.88 \\ 
+  Third Round & 0.44 & 0.38 & 0.50 & 0.44 \\ 
+  Sweet 16 & 0.25 & 0.38 & 0.38 & 0.38 \\ 
+  Elite 8 & 0.50 & 0.75 & 0.75 & 0.75 \\ 
+  Semi-Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+  Final & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+   \hline
+\end{tabular}
+}
+\caption{prediction rate for each round in 2015} 
+\end{table}
+
+\begin{figure}[H]
+\begin{center}
+   \includegraphics[scale = 0.3]{bracket.jpg}
+\end{center}
+\caption{ridge regression prediction bracket for 2015}
+\end{figure}
 
 
 
