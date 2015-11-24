@@ -53,21 +53,6 @@ output=matrix(c(nrow(win_all),length(win3_lose1)-1,
               nrow(lose_all), count, nrow(history),RightProb),nrow =1,ncol=8)
 colnames(output)=c("W", "W1L1", "W1L2", "W1L1","L","Count of corrected results",
                    "Number of games played","Correct probability")
+reference=data.frame("W:Strong seed A always beat weak seed B ","W3L1: Strong seed A won three times as it was beat by weak seed B")
 
-tourney_hist=read.csv("tourney_detailed_results.csv")
 
-for (i in 1:nrow(tourney_hist)){
-    #extract games of strong seed A as the winning team in 2003-2014
-    team_a=tourney_hist[which(tourney_hist[,3]==tourneySlots2015[i,5]),]
-    #extract games in which strong seed A beat weak seed B given it won 
-    win_b=team_a[which(team_a[,5]==tourneySlots2015[i,6]),]
-    #extract games of weak seed B as the winning team in 2003-2014
-    team_b=tourney_hist[which(tourney_hist[,3]==tourneySlots2015[i,6]),]
-    #extract games in which weak seed B beat strong seed A given it won 
-    win_a=team_b[which(team_b[,5]==tourneySlots2015[i,5]),]
-    #given total games strong seed A played against weak seed B
-    #calculate proporation strong seed A beat weak seed B 
-    winProb[i]=(dim(win_b)[1]-dim(win_a)[1])/(dim(win_b)[1]+dim(win_a)[1])
-}
-prob_tourney=cbind(1:nrow(tourney_hist),winProb)
-history_tourney=prob_tourney[which(!is.na(prob_tourney[,2])),]
