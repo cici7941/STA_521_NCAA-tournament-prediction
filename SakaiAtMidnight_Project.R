@@ -2,7 +2,7 @@
 library(glmnet)
 library(stringr)
 library(plyr)
-
+setwd("data/")
 ## load data ##
 # read in detailed results of the tournament
 detailedT = read.csv("tourney_detailed_results.csv")
