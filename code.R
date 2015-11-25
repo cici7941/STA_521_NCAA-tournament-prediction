@@ -286,7 +286,7 @@ predicting = function(year,year1){
 }
 result2012 = predicting(2012,c(2011,2012))
 result2013 = predicting(2013,c(2012,2013))
-result2014  =  predicting(2014,c(2013,2014))
+result2014 = predicting(2014,c(2013,2014))
 result2015 = predicting(2015,c(2014,2015))
 
 
