@@ -77,13 +77,13 @@ To answer this issue, we ran each model to predict the 2015 tournament with data
 
 \subsection{Coefficient Analysis}
 
-In our four models, LASSO, Elastic Net and Bayes GLM can do covariates selection. Checking the non-zero coefficients of the results, we can see some surprising results. First of all, the coefficients for each team are either significant or not in pairs. Which means that there is no case where assists for team a are important but assists for team b are not. Second, the final scores for each team at the end of each game are not relevant enough to be used which is quite unintuitive since these numbers logically determine the winner of the game. But with this result, we do not have to worry that such a statistic would cause overfitting issues to our model.\
+In our four models, LASSO, Elastic Net and Bayes GLM can do covariates selection. Checking the non-zero coefficients of the results, we can see some surprising results. First of all, the coefficients for each team are either significant or not in pairs, which means that there is no case where assists for team a are important but assists for team b are not. Second, the final scores for each team at the end of each game are not relevant enough to be used which is quite unintuitive since these numbers logically determine the winner of the game. But with this result, we do not have to worry that such a statistic would cause overfitting issues to our model.\
 
-Although the covariates selection may be slightly different when we add data of previous years, in general, they choose almost the same predictors. The coefficients of different predictors selected with different years data are very insignificant. That means they do not contribute too much to our model.\
+Although the covariates selection may be slightly different when we add data of previous years, in general, they choose almost the same predictors. The coefficients of different predictors selected with different years data are very insignificant. That means they do not contribute too much to our model. An example of the coefficients for 2015 discussed above can be seen in Table 3.
 
 \section{Results / Predictions}
 
-The results we obtained from our various models are split across Tables 2-5 in the Appendix categorized by each year from 2012-2015, with the prediction rate for each model (i.e the percentage of total games correctly predicted) at each round listed. We note that each percentage must be viewed with careful consideration. For example, a low value in the Final Four does not immediately imply a bad predicted bracket since the number of winners to be predicted (4) is much less than in the second round (32) so this does not mean our predictions for the subsequent rounds are without value.
+The results we obtained from our various models are split across Tables 6-9 in the Appendix categorized by each year from 2012-2015, with the prediction rate for each model (i.e the percentage of total games correctly predicted) at each round listed. We note that each percentage must be viewed with careful consideration. For example, a low value in the Final Four does not immediately imply a bad predicted bracket since the number of winners to be predicted (4) is much less than in the second round (32) so this does not mean our predictions for the subsequent rounds are without value.
 
 \subsection{Second Round: 32 games}
 
@@ -144,7 +144,7 @@ This further suggests that if we want to incorporate team specifics into our mod
 
 
 
-
+\newpage
 \section{References $\&$ Data Links}
 [1] Chartier, Tim., Kreutzer, Erich., Langville,  Amy. and Pedings, Kathryn. Bracketology: How can math help? URL http://mathaware.org/mam/2010/essays/ChartierBracketology.pdf
 
@@ -156,7 +156,7 @@ This further suggests that if we want to incorporate team specifics into our mod
 
 
 
-
+\newpage
 \section{Appendix}
 \begin{table}[H]
 \centering
