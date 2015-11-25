@@ -44,7 +44,7 @@
 \maketitle
 
 \begin{abstract}
-This project attempts to choose the best type of logistic regression model to predict the results of the 2012-2015 NCAA tournaments using detailed regular season data for all the teams in the association.
+This project attempts to choose the best type of logistic regression model to predict the results of the 2012-2015 NCAA tournaments using detailed regular season data for all the teams in the association.  We have used LASSO, Elastic Net, Ridge and Bayesian GLM methods to do the logistic regression. We also tried to use only one year data, two years data with previous year data and three years data with previous two years data to train our model to see how many years data we should use. After testing each of them according to the correct prediction rates, we found that training model with two years data predicted the best. Besides, according to comparing the correct prediction rates of each round of each method across the year from 2012 to 2015, with two-year-data-training-model, we chose ridge methods as the best, since the correct predictions rates of each round were always the highest. Bayesian GLM came to the second. LASSO and Elastic Net performed almost the same, but not as good as the other two methods. In the model improvement part, we toke the history results into account, which could help us explain upset games and some mispredictions in our existing models. Finally, we made a bracket we predicted for 2015 NCAA tournament.
 \end{abstract}
 
 \section{Introduction}
