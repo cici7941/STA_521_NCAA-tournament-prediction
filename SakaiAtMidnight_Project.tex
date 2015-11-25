@@ -101,10 +101,11 @@ This round has very similar prediction rate values than the one before in all fo
 
 At a close glance, the most common rate in this round is 0.25. On one hand, we can take some confidence in that our model can regularly predict some true results at this deep stage of the tournament. On the other hand, only predicting one winner drastically lowers the chances of getting decent rates for the final two rounds. That being said, the Ridge model did manage to get 0.5 and 0.75 rates in 2012 and 2015 respectively. This were our best estimates and a great example of how a bracket can still be "fixed" even if many games were mispredicted. In these particular cases, most of the No.1 seeds from each region made it to the Final Four. Since, our model naturally favours those teams with better seasonal performances (the teams that become the strongest seeds), these predictions are not anomalies. Model ranks: Lasso  $<$ Elastic Net $<$ Bayes GLM $<$ Ridge.  
 
-\subsection{Semi-Finals $\&$ Championship: 3 games}
+\subsection{Semi-Finals : 2 games}
 
 Only on 2012 do we get a 0.5 rate for all models (1 game) while the rest of the years we get 0 rates. Again, this isn't a failure but rather points out to where improvements can be made to our model. At this point of the tournament, we have the four strongest teams of the conference and only very rarely will most of them be unexpected upset teams but rather equally skilled colleges and our model will have a hard time predicting the winner when the margins between teams are not very significant. Model Ranks for Semis: Lasso  $<$ Elastic Net $<$ Ridge $<$ Bayes GLM.  
 
+\subsection{Championship Final: 1 game}
 Given that the previous round has almost always has incredibly low prediction rates, determining the champion will be very unlikely. In fact, none of our models could do it but we can't say our models have failed to be useful. Model Ranks for Final: NA
 
 \subsection{Best Model}
