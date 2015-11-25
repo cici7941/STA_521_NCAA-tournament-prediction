@@ -7,7 +7,7 @@
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
-\title{SakaiAtMidnight 521 Final Project}
+\title{Predicting NCAA Tournaments with Regularized Logistic Models}
 
 
 \author{
@@ -44,7 +44,7 @@
 \maketitle
 
 \begin{abstract}
-This project attempts to choose the best type of logistic regression model to predict the results of the 2012-2015 NCAA tournaments using detailed regular season data for all the teams in the association.  We have used LASSO, Elastic Net, Ridge and Bayesian GLM methods to do the logistic regression. We also tried to use only one year data, two years data with previous year data and three years data with previous two years data to train our model to see how many years data we should use. After testing each of them according to the correct prediction rates, we found that training model with two years data predicted the best. Besides, according to comparing the correct prediction rates of each round of each method across the year from 2012 to 2015, with two-year-data-training-model, we chose ridge methods as the best, since the correct predictions rates of each round were always the highest. Bayesian GLM came to the second. LASSO and Elastic Net performed almost the same, but not as good as the other two methods. In the model improvement part, we toke the history results into account, which could help us explain upset games and some mispredictions in our existing models. Finally, we made a bracket we predicted for 2015 NCAA tournament.
+This project attempts to choose the best type of logistic regression model to predict the results of the 2012-2015 NCAA tournaments using detailed regular season data for all the teams in the association.  We have used LASSO, Elastic Net, Ridge and Bayesian GLM methods to do the logistic regression. After comparing the prediction rates of each round for each method across the 2012-2015 tournaments, we considered the Ridge methods as the best model. Bayesian GLM came to the second. LASSO and Elastic Net performed almost the same, but not as good as the other two methods. Finally, we also explain ways in which our models could be improved upon, specificallly dealing with upsets and toking the historic results into account.
 \end{abstract}
 
 \section{Introduction}
@@ -106,7 +106,7 @@ At a close glance, the most common rate in this round is 0.25. On one hand, we c
 Here we curiously get the same rates across all models and only in 2012 and 2013 do we get a 0.5 rate (1 game), otherwise the rest of the years get 0 rates. Again, this isn't a failure but rather points out to where improvements can be made to our models. At this point of the tournament, we have the four strongest teams of the conference and only very rarely will most of them be unexpected upset teams. More than likely, the teams will be similarly skilled colleges and our models will have a hard time predicting the winner when the margins between teams are not very significant. Model Ranks for Semis: Lasso  = Elastic Net = Bayes GLM = Ridge.  
 
 \subsection{Championship Final: 1 game}
-Given that the previous round has almost always has incredibly low prediction rates, determining the champion will be very unlikely. In fact, none of our models could do it but we can't say our models have failed to be useful. Model Ranks for Final: NA
+Given that the previous round has almost always has incredibly low prediction rates, determining the champion will be very unlikely. In fact, none of our models could do it but we cannot say our models have failed to be useful. Model Ranks for Final: NA
 
 \subsection{Best Model}
 
