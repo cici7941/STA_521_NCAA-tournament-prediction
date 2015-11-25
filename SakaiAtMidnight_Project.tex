@@ -79,7 +79,7 @@ To answer this issue, we ran each model to predict the 2015 tournament with data
 
 In our four models, LASSO, Elastic Net and Bayes GLM can do covariates selection. Checking the non-zero coefficients of the results, we can see some surprising results. First of all, the coefficients for each team are either significant or not in pairs, which means that there is no case where assists for team a are important but assists for team b are not. Second, the final scores for each team at the end of each game are not relevant enough to be used which is quite unintuitive since these numbers logically determine the winner of the game. But with this result, we do not have to worry that such a statistic would cause overfitting issues to our model.\
 
-Although the covariates selection may be slightly different when we add data of previous years, in general, they choose almost the same predictors. The coefficients of different predictors selected with different years data are very insignificant. That means they do not contribute too much to our model. An example of the coefficients for 2015 discussed above can be seen in Table 3.
+Although the covariates selection may be slightly different when we add data of previous years, in general, they choose almost the same predictors. The coefficients of different predictors selected with different years data are very insignificant. That means they do not contribute too much to our model. An example of the coefficient values for 2015 discussed above can be seen in Table 2 and a detailed account of what each covariate means is located in Table 3.
 
 \section{Results / Predictions}
 
@@ -91,7 +91,7 @@ Throughout the four tournament editions, our models' predictions for this round 
 
 \subsection{Third Round: 16 games}
 
-The Third round is overall proved to be a much harder round to predict. All of our models have rates between 0.1 to 0.6 which is a lot of variation for a single round unlike before. Here we can see first-hand the difficulties our models encounter when upsets are not considered to a large extent. Most of our mispredictions come from these type of games and even one or two upsets can go on to shatter future predictions. Even so we can still rank our models' perofrmance: Bayes GLM $<$ Ridge $<$ Elastic Net $<$ Lasso.
+The Third round is overall proved to be a much harder round to predict. All of our models have rates between 0.1 to 0.6 which is a lot of variation for a single round unlike before. Here we can see first-hand the difficulties our models encounter when upsets are not considered to a large extent. Most of our mispredictions come from these type of games and even one or two upsets can go on to shatter future predictions. Even so we can still rank our models' performance: Bayes GLM $<$ Ridge $<$ Elastic Net $<$ Lasso.
 
 \subsection{Sweet Sixteen: 8 games}
 
